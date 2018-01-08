@@ -34,103 +34,312 @@ window.onload = function () {
         LEFT = 3
     };
 
-    (function () {
-        let snakes = {};
-        let field = new Array(fieldWidth);
-        let snakesField = new Array(fieldWidth);
+    const snakesCount = 10;
+    const foodCount = fieldWidth * fieldWidth / 4;
 
-        for (let i = 0; i < fieldWidth; ++i) {
-            field[i] = new Array(fieldWidth);
-            snakesField[i] = new Array(fieldWidth);
-            for (let j = 0; j < fieldWidth; ++j) {
-                field[i][j] = CellTypes.EMPTY;
-                snakesField[i][j] = null;
-            }
-        }
+    let game = new Game(fieldWidth);
 
-        class Snake {
-            constructor(name, color, headX, headY) {
-                this.name = name;
-                this.color = color;
-                
-                this.headX = headX;
-                this.headY = headY;
-                this.length = 0;
-    
-                this.direction = Direction.UP;
-            }
+    game.initGame(foodCount, snakesCount);
 
-            turnToFeed(x, y) {
-                let tailX = x;
-                let tailY = y;
-                while (true) {
-                    const snakeDirection = field[tailX, tailY];
-                    if (snakesField[tailX][tailY] !== this) {
-                        throw new Error("Broken tail");
-                    }
-                    field[tailX][tailY] = CellTypes.FOOD;
-                    snakesField[tailX][tailY] = null;
-                    switch (snakeDirection) {
-                        case CellTypes.SNAKE.UP:
-                            --tailY;
-                            break;
-                        case CellTypes.SNAKE.RIGHT:
-                            ++tailX;
-                            break;
-                        case CellTypes.SNAKE.DOWN:
-                            ++tailY;
-                            break;
-                        case CellTypes.SNAKE.LEFT:
-                            --tailX;
-                            break;
-                        case CellTypes.SNAKE.TAIL:
-                            return;
-                    }
-                }
-            }
+    class Game {
+        constructor(fieldWidth) {
+            this.fieldWidth = fieldWidth;
+            this.snakes = {};
+            this.field = new Array(fieldWidth);
+            this.snakesField = new Array(fieldWidth);
 
-            setTail(x, y, direction) {
-                if (field[x][y] === direction) {
-                    if (snakesField[x][y] === this) {
-                        field[x][y] = CellTypes.SNAKE.TAIL;
-                    }
-                    else {
-                        throw new Error("Broken snake");
-                    }
-                }
-            }
-
-            die() {
-                this.turnToFeed(this.headX, this.headY, this);
-                delete snakes[this.name];
-            }
-
-            step() {
-                if (this.headX === 0 || this.headY === 0 || this.headX === fieldWidth - 1 || this.headY === fieldWidth - 1)
-                    return;
-                
-                switch (this.direction) {
-                    
+            for (let i = 0; i < this.fieldWidth; ++i) {
+                this.field[i] = new Array(this.fieldWidth);
+                this.snakesField[i] = new Array(this.fieldWidth);
+                for (let j = 0; j < this.fieldWidth; ++j) {
+                    this.field[i][j] = CellTypes.EMPTY;
+                    this.snakesField[i][j] = null;
                 }
             }
         }
 
-        function createSnake(name, color, headX, headY) {
+        fieldAt(x, y) {
+            return this.field[x][y];
+        }
+
+        setFieldAt(x, y, cell) {
+            this.field[x][y] = cell;
+        }
+
+        snakeAt(x, y) {
+            return this.snakesField[x][y];
+        }
+
+        setSnakeAt(x, y, snake) {
+            this.snakesField[x][y] = snake;
+        }
+
+        createSnake(name, color, headX, headY) {
             const newSnake = new Snake(name, color, headX, headY);
-            snakes[name] = newSnake;
-            field[headX][headY] = CellTypes.SNAKE.TAIL;
-            snakesField[headX][headY] = newSnake;
+            this.snakes[name] = newSnake;
+            this.setFieldAt(headX, headY, CellTypes.SNAKE.TAIL);
+            this.setSnakeAt(headX, headY, newSnake);
+            return newSnake;
         }
 
-        function cutTail(x, y) {
-            const snake = snakesField[x][y];
-
-            snake.setTail(x - 1, y, CellTypes.SNAKE.LEFT);
-            snake.setTail(x + 1, y, CellTypes.SNAKE.RIGHT);
-            snake.setTail(x, y - 1, CellTypes.SNAKE.UP);
-            snake.setTail(x, y + 1, CellTypes.SNAKE.DOWN);
-
-            snake.turnToFeed(x, y);
+        randomFieldCoord() {
+            return Math.round(Math.random() * (this.fieldWidth - 1));
         }
-    })();
-}
+
+        initGame(foodCount, snakesCount) {
+            for (let i; i < foodCount; ++i) {
+                this.field[this.randomFieldCoord()][this.randomFieldCoord()] = CellTypes.FOOD;
+            }
+            for (let i; i < snakesCount; ++i) {
+                this.createSnake(i.toString(), Math.random() * 100, this.randomFieldCoord(), this.randomFieldCoord());
+            }
+        }
+
+        step() {
+            let deadSnakes = [];
+            for (let snake in this.snakes) {
+                if (snake.isAlive) {
+                    snake.step();
+                }
+                else {
+                    deadSnakes.push(snake);
+                }
+            }
+            for (let snake in deadSnakes) {
+                delete this.snakes[snake.name];
+            }
+        }
+    }
+
+    class Snake {
+        constructor(name, color, headX, headY) {
+            this.name = name;
+            this.color = color;
+            
+            this.headX = headX;
+            this.headY = headY;
+
+            this.tailX = headX;
+            this.tailY = headY;
+            
+            this.length = 1;
+
+            this.isAlive = true;
+
+            this.direction = Direction.UP;
+        }
+
+        turnToFeed(x, y) {
+            if (game.snakeAt(restX, restY) !== this) {
+                return;
+            }
+            
+            let tailSet = snake._stepTail(x, y);
+
+            if (!tailSet) {
+                this.isAlive = false;
+            }
+
+            let restX = x;
+            let restY = y;
+            while (true) {
+                const snakeDirection = game.fieldAt(restX, restY);
+                if (game.snakeAt(restX, restY) !== this) {
+                    throw new Error("Broken snake tail");
+                }
+                game.setFieldAt(restX, restY, CellTypes.FOOD);
+                game.setSnakeAt(restX, restY, null);
+                this.length--;
+                switch (snakeDirection) {
+                    case CellTypes.SNAKE.UP:
+                        --restY;
+                        break;
+                    case CellTypes.SNAKE.RIGHT:
+                        ++restX;
+                        break;
+                    case CellTypes.SNAKE.DOWN:
+                        ++restY;
+                        break;
+                    case CellTypes.SNAKE.LEFT:
+                        --restX;
+                        break;
+                    case CellTypes.SNAKE.TAIL:
+                        return;
+                    default:
+                        throw new Error("Broken tail");
+                }
+            }
+        }
+
+        _setTail(x, y, direction) {
+            if (game.fieldAt(x, y) === direction) {
+                if (game.snakeAt(x, y) === this) {
+                    game.setFieldAt(x, y, CellTypes.SNAKE.TAIL);
+                    this.tailX = x;
+                    this.tailY = y;
+                    return true;
+                }
+                else {
+                    throw new Error("Broken snake");
+                }
+            }
+            return false;
+        }
+
+        _stepTail(tailX, tailY) {
+            game.setFieldAt(tailX, tailY, CellTypes.EMPTY);
+            game.setSnakeAt(tailX, tailY, null);
+
+            let tailSet = false;
+            if (this._setTail(tailX - 1, tailY, CellTypes.SNAKE.RIGHT)) {
+                tailSet = true;
+            }
+            if (this._setTail(tailX + 1, tailY, CellTypes.SNAKE.LEFT)) {
+                if (tailSet) throw new Error("Broken tail step");
+                tailSet = true;
+            }
+            if (this._setTail(tailX, tailY - 1, CellTypes.SNAKE.DOWN)) {
+                if (tailSet) throw new Error("Broken tail step");
+                tailSet = true;
+            }
+            if (this._setTail(tailX, tailY + 1, CellTypes.SNAKE.UP)) {
+                if (tailSet) throw new Error("Broken tail step");
+            }
+            return tailSet;
+        }
+
+        stepTail() {
+            if (this._stepTail(this.tailX, this.tailY)) {
+                this.length--;
+            }
+        }
+
+        die() {
+            this.turnToFeed(this.headX, this.headY);
+            this.isAlive = false;
+        }
+
+        step() {
+            let newCell = CellTypes.EMPTY;
+            let doStep = false;
+
+            let newX = this.headX;
+            let newY = this.headY;
+
+            switch (this.direction) {
+                case Direction.UP:
+                    if (newY > 0) {
+                        newY--;
+                        newCell = CellTypes.SNAKE.DOWN;
+                        doStep = true;
+                    }
+                    break;
+                case Direction.LEFT:
+                    if (newX > 0) {
+                        newX--;
+                        newCell = CellTypes.SNAKE.RIGHT;
+                        doStep = true;
+                    }
+                    break;
+                case Direction.RIGHT:
+                    if (newX < fieldWidth - 1) {
+                        newX++;
+                        newCell = CellTypes.SNAKE.LEFT;
+                        doStep = true;
+                    }
+                    break;
+                case Direction.DOWN:
+                    if (newY < fieldWidth - 1) {
+                        newY++;
+                        newCell = CellTypes.SNAKE.UP;
+                        doStep = true;
+                    }
+                    break;
+                default:
+                    throw new Error("Direction");
+            }
+            if (doStep) {
+                let oldCell = game.fieldAt(newX, newY);
+                if (oldCell === CellTypes.BRICK) {
+                    return;
+                }
+                
+                const snake = game.snakeAt(newX, newY);
+                if (snake !== null) {
+                    snake.turnToFeed(newX, newY);
+                }
+                
+                game.setSnakeAt(newX, newY, this);
+                
+                this.headX = newX;
+                this.headY = newY;
+                
+                if (oldCell === CellTypes.EMPTY) {
+                    this.stepTail();
+                }
+            }
+        }
+
+        setDirection(direction) {
+            switch (this.direction) {
+                case Direction.UP:
+                    if (direction === Direction.DOWN) {
+                        return false;
+                    }
+                    break;
+                case Direction.RIGHT:
+                    if (direction === Direction.LEFT) {
+                        return false;
+                    }
+                    break;
+                case Direction.DOWN:
+                    if (direction === Direction.UP) {
+                        return false;
+                    }
+                    break;
+                case Direction.LEFT:
+                    if (direction === Direction.RIGHT) {
+                        return false;
+                    }
+                    break;
+                default:
+                    throw new Error("Invalid direction");
+            }
+            this.direction = direction;
+            return true;
+        }
+    }
+
+    class UserInput {
+        constructor() {
+            this.snake = game.createSnake("User", 1234, fieldWidth / 2, fieldWidth / 2);
+        }
+
+        onSetDirection(direction) {
+            this.snake.setDirection(direction);
+        }
+    }
+
+    class GameRenderer {
+        render() {
+
+        }
+    }
+
+    class GameController {
+        constructor() {
+            this.timer = null;
+        }
+
+        start() {
+            this.stop();
+            this.timer = setInterval(() => game.step(), 1000);
+        }
+
+        stop() {
+            if (this.timer !== null) {
+                clearInterval(this.timer);
+            }
+        }
+    }
+};
