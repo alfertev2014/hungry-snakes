@@ -284,7 +284,7 @@ class Snake {
 
     cut(x, y, cutDirection) {
         const cell = game.getCell(x, y);
-        if (cell < 0 || snakeIdOf(x, y) !== this.id) {
+        if (cell < 0 || snakeIdOf(cell) !== this.id) {
             return;
         }
 
