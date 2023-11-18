@@ -148,25 +148,42 @@ export class Snake {
   }
 
   doHeadStep(): void {
-    this._moveHeadForward()
-    this._refreshHeadCell()
+    if (this._moveHeadForward()) {
+      this._refreshHeadCell()
+      this._length++
+    }
   }
 
-  _moveHeadForward(): void {
+  _moveHeadForward(): boolean {
     switch (this._direction) {
       case SnakeDirection.SNAKE_UP:
+        if (this._headY === 0) {
+          return false
+        }
         this._headY--
         break
       case SnakeDirection.SNAKE_RIGHT:
+        if (this._headX === this.field.width - 1) {
+          return false
+        }
         this._headX++
         break
       case SnakeDirection.SNAKE_DOWN:
+        if (this._headY === this.field.height - 1) {
+          return false
+        }
         this._headY++
         break
       case SnakeDirection.SNAKE_LEFT:
+        if (this._headX === 0) {
+          return false
+        }
         this._headX--
         break
+      default:
+        return false
     }
+    return true
   }
 
   doTailStep(): void {
