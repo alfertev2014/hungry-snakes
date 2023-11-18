@@ -1,57 +1,37 @@
 import { describe, expect, test } from "@jest/globals"
 import {
-  CellEnum,
-  type SnakeDirection,
-  cellGetSnakeDirection,
-  cellGetSnakeId,
   cellIsSnake,
-  makeSnakeCell,
 } from "../cell"
+import { Snake, SnakeDirection } from "../snake"
+import { SnakesField } from "../field"
+import { NON_SNAKE_CELL_TYPES, SNAKE_DIRECTIONS } from "./const"
 
-const nonSnakeType = [CellEnum.EMPTY, CellEnum.FOOD, CellEnum.BRICK, CellEnum.POISON]
-const snakeDirections: SnakeDirection[] = [
-  CellEnum.SNAKE_UP,
-  CellEnum.SNAKE_RIGHT,
-  CellEnum.SNAKE_DOWN,
-  CellEnum.SNAKE_LEFT,
-]
 
-describe("Make snake cell with direction", () => {
-  test("should not be non-snake cell", () => {
-    const snakeId = 42
-    for (const direction of snakeDirections) {
-      const cell = makeSnakeCell(snakeId, direction)
-      expect(cell).not.toBe(CellEnum.EMPTY)
-      expect(cell).not.toBe(CellEnum.FOOD)
-      expect(cell).not.toBe(CellEnum.POISON)
-      expect(cell).not.toBe(CellEnum.BRICK)
-    }
-  })
-
+describe("Snake cell with direction", () => {
   test("should have sign of snake", () => {
-    const snakeId = 42
-    for (const direction of snakeDirections) {
-      const cell = makeSnakeCell(snakeId, direction)
+    const field = new SnakesField(3, 3)
+    const snake = new Snake(field, 1, 1, SnakeDirection.SNAKE_UP)
+    for (const direction of SNAKE_DIRECTIONS) {
+      const cell = snake.getSnakeCell(direction)
       expect(cellIsSnake(cell)).toBe(true)
     }
   })
 
   test("should have the same direction and snake id", () => {
-    const snakeId = 42
-    for (const direction of snakeDirections) {
-      const cell = makeSnakeCell(snakeId, direction)
-      expect(cellGetSnakeId(cell)).toBe(snakeId)
-      expect(cellGetSnakeDirection(cell)).toBe(direction)
+    const field = new SnakesField(3, 3)
+    const snake = new Snake(field, 1, 1, SnakeDirection.SNAKE_UP)
+    for (const direction of SNAKE_DIRECTIONS) {
+      const cell = snake.getSnakeCell(direction)
+      expect(cell.snake).toBe(snake)
+      expect(cell.direction).toBe(direction)
     }
   })
 })
 
 describe("Non-snake cell", () => {
   test("sould not be snake", () => {
-    for (const nonSnake of nonSnakeType) {
+    for (const nonSnake of NON_SNAKE_CELL_TYPES) {
       expect(cellIsSnake(nonSnake)).toBe(false)
-      expect(cellGetSnakeDirection(nonSnake)).toBeUndefined()
-      expect(cellGetSnakeId(nonSnake)).toBeUndefined()
     }
   })
 })

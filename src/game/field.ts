@@ -1,10 +1,10 @@
-import { CellEnum, type SnakeDirection } from "./cell"
-import { type Snake } from "./snake"
+import { CellEnum, type CellType } from "./cell"
+import { SnakeDirection, type Snake } from "./snake"
 
 export class SnakesField {
   readonly width: number
   readonly height: number
-  readonly _field: Uint32Array
+  readonly _cells: CellType[]
   readonly _snakes: Map<number, Snake>
   constructor(width: number, height: number) {
     if (width <= 0 || height <= 0) {
@@ -12,52 +12,43 @@ export class SnakesField {
     }
     this.width = width
     this.height = height
-    this._field = new Uint32Array(width * height)
+    this._cells = new Array(width * height)
+    for (let i = 0; i < this._cells.length; ++i) {
+      this._cells[i] = CellEnum.EMPTY
+    }
     this._snakes = new Map()
   }
 
-  getCell(x: number, y: number): number {
-    return this._field[x + y * this.width]
+  getCell(x: number, y: number): CellType {
+    return this._cells[x + y * this.width]
   }
 
-  setCell(x: number, y: number, value: number): void {
-    this._field[x + y * this.width] = value
+  setCell(x: number, y: number, value: CellType): void {
+    this._cells[x + y * this.width] = value
   }
 
-  getAjacentCell(x: number, y: number, direction: SnakeDirection): number {
+  getAjacentCell(x: number, y: number, direction: SnakeDirection): CellType {
     switch (direction) {
-      case CellEnum.SNAKE_UP:
+      case SnakeDirection.SNAKE_UP:
         if (y === 0) {
           return CellEnum.BRICK
         }
         return this.getCell(x, y - 1)
-      case CellEnum.SNAKE_RIGHT:
+      case SnakeDirection.SNAKE_RIGHT:
         if (x === this.width - 1) {
           return CellEnum.BRICK
         }
         return this.getCell(x + 1, y)
-      case CellEnum.SNAKE_DOWN:
+      case SnakeDirection.SNAKE_DOWN:
         if (y === this.height - 1) {
           return CellEnum.BRICK
         }
         return this.getCell(x, y + 1)
-      case CellEnum.SNAKE_LEFT:
+      case SnakeDirection.SNAKE_LEFT:
         if (x === 0) {
           return CellEnum.BRICK
         }
         return this.getCell(x - 1, y)
     }
-  }
-
-  getSnakeById(id: number): Snake | undefined {
-    return this._snakes.get(id)
-  }
-
-  killSnake(id: number): void {
-    this._snakes.delete(id)
-  }
-
-  get snakeCount(): number {
-    return this._snakes.size
   }
 }
