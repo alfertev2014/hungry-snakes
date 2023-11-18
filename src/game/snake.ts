@@ -28,33 +28,71 @@ export const isOppositeDirection = (
   return false
 }
 
+export enum SnakeStatus {
+  NEW
+}
+
 export class Snake {
   readonly field: SnakesField
-  _direction: SnakeDirection
-
+  
   _headX: number
   _headY: number
 
   _tailX: number
   _tailY: number
-
+  
+  _length: number
+  _status: SnakeStatus
+  
+  _direction: SnakeDirection
   readonly UP: SnakeCell
   readonly RIGHT: SnakeCell
   readonly DOWN: SnakeCell
   readonly LEFT: SnakeCell
-
   constructor(field: SnakesField, headX: number, headY: number, direction: SnakeDirection) {
-    this.field = field
+    if (headX < 0 || headX >= field.width) {
+      throw new Error("Creating snake: headX is out of field dimention")
+    }
+    if (headY < 0 || headY >= field.height) {
+      throw new Error("Creating snake: headY is out of field dimention")
+    }
+    this.field = field   
     this._headX = headX
     this._headY = headY
     this._tailX = headX
     this._tailY = headY
+    this._length = 1
+    this._status = SnakeStatus.NEW
     this._direction = direction
     this.UP = new SnakeCell(this, SnakeDirection.SNAKE_UP)
     this.RIGHT = new SnakeCell(this, SnakeDirection.SNAKE_RIGHT)
     this.DOWN = new SnakeCell(this, SnakeDirection.SNAKE_DOWN)
     this.LEFT = new SnakeCell(this, SnakeDirection.SNAKE_LEFT)
-    this.refreshHeadCell()
+    this._refreshHeadCell()
+  }
+
+  get length(): number {
+    return this._length
+  }
+
+  get status(): SnakeStatus {
+    return SnakeStatus.NEW
+  }
+
+  get headX(): number {
+    return this._headX
+  }
+
+  get headY(): number {
+    return this._headY
+  }
+
+  get tailX(): number {
+    return this._tailX
+  }
+
+  get tailY(): number {
+    return this._tailY
   }
 
   getSnakeCell(direction: SnakeDirection): SnakeCell {
@@ -72,7 +110,7 @@ export class Snake {
     }
   }
 
-  refreshHeadCell(): void {
+  _refreshHeadCell(): void {
     this.field.setCell(this._headX, this._headY, this.getSnakeCell(this._direction))
   }
 
@@ -82,7 +120,7 @@ export class Snake {
       return false
     }
     this._direction = direction
-    this.refreshHeadCell()
+    this._refreshHeadCell()
     return true
   }
 
@@ -110,11 +148,11 @@ export class Snake {
   }
 
   doHeadStep(): void {
-    this.moveHeadForward()
-    this.refreshHeadCell()
+    this._moveHeadForward()
+    this._refreshHeadCell()
   }
 
-  moveHeadForward(): void {
+  _moveHeadForward(): void {
     switch (this._direction) {
       case SnakeDirection.SNAKE_UP:
         this._headY--
@@ -138,10 +176,10 @@ export class Snake {
     }
     const direction = tailCell.direction
     this.field.setCell(this._tailX, this._tailY, CellEnum.EMPTY)
-    this.moveTailToDirection(direction)
+    this._moveTailToDirection(direction)
   }
 
-  moveTailToDirection(direction: SnakeDirection): void {
+  _moveTailToDirection(direction: SnakeDirection): void {
     switch (direction) {
       case SnakeDirection.SNAKE_UP:
         this._tailY--
@@ -160,9 +198,9 @@ export class Snake {
 
   doBite(snake: Snake | undefined): void {
     if (snake != null) {
-      this.moveHeadForward()
+      this._moveHeadForward()
       snake.cut(this._headX, this._headY)
-      this.refreshHeadCell()
+      this._refreshHeadCell()
     }
   }
 
@@ -179,7 +217,7 @@ export class Snake {
       throw new Error("Failed to do drop food from tail! Tail cell is not snake.")
     }
     this.field.setCell(this._tailX, this._tailY, CellEnum.FOOD)
-    this.moveTailToDirection(tailCell.direction)
+    this._moveTailToDirection(tailCell.direction)
   }
 }
 

@@ -1,4 +1,5 @@
-import { CellEnum, type SnakeDirection } from "../game/cell"
+import { CellEnum } from "../game/cell"
+import { type SnakeDirection } from "../game/snake"
 import { type FieldTheme, type FillStyle, type SnakeStyle } from "./theme"
 
 export const defaultTheme: FieldTheme = {
