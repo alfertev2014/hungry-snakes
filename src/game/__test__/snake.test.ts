@@ -1,11 +1,12 @@
-import { describe, expect, test, beforeAll } from "@jest/globals"
+import { describe, expect, test, beforeEach } from "@jest/globals"
 import { SnakesField } from "../field"
 import { Snake, SnakeDirection, SnakeStatus } from "../snake"
+import { SNAKE_DIRECTIONS } from "./const"
 
 describe("Snakes", () => {
   let field: SnakesField
 
-  beforeAll(() => {
+  beforeEach(() => {
     field = new SnakesField(3, 3)
   })
 
@@ -156,6 +157,55 @@ describe("Snakes", () => {
       snake.doHeadStep()
       const cell = field.getCell(0, 1)
       expect(cell).toBe(snake.LEFT)
+    })
+  })
+  describe("Changing direction", () => {
+    test("when length is 1 should change snake direction and snake link", () => {
+      const snake = new Snake(field, 1, 1, SnakeDirection.SNAKE_LEFT)
+      for (const direction of SNAKE_DIRECTIONS) {
+        snake.changeDirection(direction)
+        expect(snake.direction).toBe(direction)
+        expect(field.getCell(snake.headX, snake.headY)).toBe(snake.getSnakeCell(direction))
+      }
+    })
+    test("when length > 1 should not change to opposite of previous direction", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_LEFT)
+      expect(snake.direction).toBe(SnakeDirection.SNAKE_RIGHT)
+      expect(field.getCell(snake.headX, snake.headY)).toBe(snake.RIGHT)
+    })
+    test("when length > 1 should not change to opposite of previous direction after turning to the left hand side", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_UP)
+      snake.changeDirection(SnakeDirection.SNAKE_LEFT)
+      expect(snake.direction).toBe(SnakeDirection.SNAKE_UP)
+      expect(field.getCell(snake.headX, snake.headY)).toBe(snake.UP)
+    })
+    test("when length > 1 should not change to opposite of previous direction after turning to the right hand side", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      snake.changeDirection(SnakeDirection.SNAKE_LEFT)
+      expect(snake.direction).toBe(SnakeDirection.SNAKE_DOWN)
+      expect(field.getCell(snake.headX, snake.headY)).toBe(snake.DOWN)
+    })
+    test("should be allowed for opposite direction when head is turning to the left hand side", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      snake.changeDirection(SnakeDirection.SNAKE_UP)
+      expect(snake.direction).toBe(SnakeDirection.SNAKE_UP)
+      expect(field.getCell(snake.headX, snake.headY)).toBe(snake.UP)
+    })
+    test("should be allowed for opposite direction when head is turning to the right hand side", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_UP)
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      expect(snake.direction).toBe(SnakeDirection.SNAKE_DOWN)
+      expect(field.getCell(snake.headX, snake.headY)).toBe(snake.DOWN)
     })
   })
 })

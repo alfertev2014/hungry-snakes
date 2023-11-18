@@ -95,6 +95,10 @@ export class Snake {
     return this._tailY
   }
 
+  get direction(): SnakeDirection {
+    return this._direction
+  }
+
   getSnakeCell(direction: SnakeDirection): SnakeCell {
     switch (direction) {
       case SnakeDirection.SNAKE_UP:

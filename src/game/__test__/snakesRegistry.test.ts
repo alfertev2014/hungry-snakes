@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeAll, beforeEach } from "@jest/globals"
+import { describe, expect, test, beforeEach } from "@jest/globals"
 import { SnakesRegistry } from "../snakesRegistry"
 import { SnakesField } from "../field"
 import { Snake, SnakeDirection } from "../snake"
@@ -6,7 +6,7 @@ import { Snake, SnakeDirection } from "../snake"
 describe("Snakes registry", () => {
   let field: SnakesField
 
-  beforeAll(() => {
+  beforeEach(() => {
     field = new SnakesField(2, 3)
   })
 
