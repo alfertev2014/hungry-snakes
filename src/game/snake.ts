@@ -28,8 +28,10 @@ export const isOppositeDirection = (
   return false
 }
 
+
 export enum SnakeStatus {
-  NEW
+  NEW,
+  DIED
 }
 
 export class Snake {
@@ -76,7 +78,7 @@ export class Snake {
   }
 
   get status(): SnakeStatus {
-    return SnakeStatus.NEW
+    return this._status
   }
 
   get headX(): number {
@@ -195,9 +197,13 @@ export class Snake {
     if (!cellIsSnake(tailCell)) {
       throw Error("Tail step is not valid! Tail cell is not snake.")
     }
-    const direction = tailCell.direction
     this.field.setCell(this._tailX, this._tailY, CellEnum.EMPTY)
-    this._moveTailToDirection(direction)
+    this._length--
+    if (this._length <= 0) {
+      this._status = SnakeStatus.DIED
+    } else {
+      this._moveTailToDirection(tailCell.direction)
+    }
   }
 
   _moveTailToDirection(direction: SnakeDirection): void {

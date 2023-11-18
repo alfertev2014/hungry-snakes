@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach } from "@jest/globals"
 import { SnakesField } from "../field"
 import { Snake, SnakeDirection, SnakeStatus } from "../snake"
 import { SNAKE_DIRECTIONS } from "./const"
+import { CellEnum } from "../cell"
 
 describe("Snakes", () => {
   let field: SnakesField
@@ -206,6 +207,65 @@ describe("Snakes", () => {
       snake.changeDirection(SnakeDirection.SNAKE_DOWN)
       expect(snake.direction).toBe(SnakeDirection.SNAKE_DOWN)
       expect(field.getCell(snake.headX, snake.headY)).toBe(snake.DOWN)
+    })
+  })
+  describe("Doing tail step", () => {
+    test("when length == 2 should decrement length", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+
+      snake.doTailStep()
+      expect(snake.length).toBe(1)
+    })
+    test("when length > 2 should decrement length", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+
+      snake.doTailStep()
+      expect(snake.length).toBe(2)
+      
+      snake.doTailStep()
+      expect(snake.length).toBe(1)
+    })
+    test("when length == 1 should kill the snake", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doTailStep()
+      expect(snake.length).toBe(0)
+      expect(snake.status).toBe(SnakeStatus.DIED)
+    })
+    test("tail should be moved to tail cell direction", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+
+      snake.doTailStep()
+      expect(snake.tailX).toBe(1)
+      expect(snake.tailY).toBe(1)
+    })
+    test("previous tail cell should become empty", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+
+      const tailX = snake.tailX
+      const tailY = snake.tailY
+      snake.doTailStep()
+      expect(field.getCell(tailX, tailY)).toBe(CellEnum.EMPTY)
+    })
+    test("new tail cell should be still the snake's cell", () => {
+      const snake = new Snake(field, 0, 0, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      snake.doHeadStep()
+      snake.doHeadStep()
+
+      snake.doTailStep()
+      snake.doTailStep()
+      expect(snake.tailX).toBe(1)
+      expect(snake.tailY).toBe(1)
+      const tailCell = field.getCell(snake.tailX, snake.tailY)
+      expect(tailCell).toBe(snake.DOWN)
     })
   })
 })
