@@ -44,6 +44,8 @@ export class Viewport implements DrawingOutput {
   
   clearWithBackground(): void {
 
+    this.ctx.fillStyle = this.theme.background
+    this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
   drawCellRect(x: number, y: number, fillStyle: FillStyle): void {
