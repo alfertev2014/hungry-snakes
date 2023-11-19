@@ -71,7 +71,7 @@ describe("Snakes", () => {
     })
   })
 
-  describe("Doing head step", () => {    
+  describe("Doing head step", () => {
     test("should increment snake length 1", () => {
       const snake = new Snake(field, 2, 1, SnakeDirection.SNAKE_UP)
       snake.doHeadStep()
@@ -224,7 +224,7 @@ describe("Snakes", () => {
 
       snake.doTailStep()
       expect(snake.length).toBe(2)
-      
+
       snake.doTailStep()
       expect(snake.length).toBe(1)
     })
@@ -266,6 +266,22 @@ describe("Snakes", () => {
       expect(snake.tailY).toBe(1)
       const tailCell = field.getCell(snake.tailX, snake.tailY)
       expect(tailCell).toBe(snake.DOWN)
+    })
+  })
+  describe("Dropping food at tail", () => {
+    test("should behave as tail step with dropping food cell", () => {
+      const snake = new Snake(field, 0, 0, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+
+      snake.dropFood()
+      expect(snake.tailX).toBe(1)
+      expect(snake.tailY).toBe(0)
+      const tailCell = field.getCell(snake.tailX, snake.tailY)
+      expect(tailCell).toBe(snake.DOWN)
+      const foodCell = field.getCell(0, 0)
+      expect(foodCell).toBe(CellEnum.FOOD)
+      expect(snake.length).toBe(1)
     })
   })
 })

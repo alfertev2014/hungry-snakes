@@ -1,7 +1,4 @@
-import {
-  CellEnum,
-  cellIsSnake,
-} from "./cell"
+import { CellEnum, cellIsSnake } from "./cell"
 import { type SnakesField } from "./field"
 
 export enum SnakeDirection {
@@ -28,24 +25,23 @@ export const isOppositeDirection = (
   return false
 }
 
-
 export enum SnakeStatus {
   NEW,
-  DIED
+  DIED,
 }
 
 export class Snake {
   readonly field: SnakesField
-  
+
   _headX: number
   _headY: number
 
   _tailX: number
   _tailY: number
-  
+
   _length: number
   _status: SnakeStatus
-  
+
   _direction: SnakeDirection
   readonly UP: SnakeCell
   readonly RIGHT: SnakeCell
@@ -58,7 +54,7 @@ export class Snake {
     if (headY < 0 || headY >= field.height) {
       throw new Error("Creating snake: headY is out of field dimention")
     }
-    this.field = field   
+    this.field = field
     this._headX = headX
     this._headY = headY
     this._tailX = headX
@@ -192,12 +188,12 @@ export class Snake {
     return true
   }
 
-  doTailStep(): void {
+  _doTailStep(dropCell: CellEnum): void {
     const tailCell = this.field.getCell(this._tailX, this._tailY)
     if (!cellIsSnake(tailCell)) {
       throw Error("Tail step is not valid! Tail cell is not snake.")
     }
-    this.field.setCell(this._tailX, this._tailY, CellEnum.EMPTY)
+    this.field.setCell(this._tailX, this._tailY, dropCell)
     this._length--
     if (this._length <= 0) {
       this._status = SnakeStatus.DIED
@@ -223,12 +219,12 @@ export class Snake {
     }
   }
 
-  doBite(snake: Snake | undefined): void {
-    if (snake != null) {
-      this._moveHeadForward()
-      snake.cut(this._headX, this._headY)
-      this._refreshHeadCell()
-    }
+  doTailStep(): void {
+    this._doTailStep(CellEnum.EMPTY)
+  }
+
+  dropFood(): void {
+    this._doTailStep(CellEnum.FOOD)
   }
 
   cut(x: number, y: number): void {
@@ -238,13 +234,12 @@ export class Snake {
     this.doTailStep()
   }
 
-  dropFood(): void {
-    const tailCell = this.field.getCell(this._tailX, this._tailY)
-    if (!cellIsSnake(tailCell)) {
-      throw new Error("Failed to do drop food from tail! Tail cell is not snake.")
+  doBite(snake: Snake | undefined): void {
+    if (snake != null) {
+      this._moveHeadForward()
+      snake.cut(this._headX, this._headY)
+      this._refreshHeadCell()
     }
-    this.field.setCell(this._tailX, this._tailY, CellEnum.FOOD)
-    this._moveTailToDirection(tailCell.direction)
   }
 }
 

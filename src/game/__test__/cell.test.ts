@@ -1,11 +1,8 @@
 import { describe, expect, test } from "@jest/globals"
-import {
-  cellIsSnake,
-} from "../cell"
+import { cellIsSnake } from "../cell"
 import { Snake, SnakeDirection } from "../snake"
 import { SnakesField } from "../field"
 import { NON_SNAKE_CELL_TYPES, SNAKE_DIRECTIONS } from "./const"
-
 
 describe("Snake cell with direction", () => {
   test("should have sign of snake", () => {

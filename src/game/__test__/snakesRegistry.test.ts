@@ -10,25 +10,25 @@ describe("Snakes registry", () => {
     field = new SnakesField(2, 3)
   })
 
-  test('should be empty when created', () => {
+  test("should be empty when created", () => {
     const snakes = new SnakesRegistry(field)
     expect(snakes.count).toBe(0)
   })
 
-  describe('When creating snakes', () => {
-    test('should have size 1 when snake is created', () => {
+  describe("When creating snakes", () => {
+    test("should have size 1 when snake is created", () => {
       const snakes = new SnakesRegistry(field)
       snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
       expect(snakes.count).toBe(1)
     })
 
-    test('Just created snake should be in registry', () => {
+    test("Just created snake should be in registry", () => {
       const snakes = new SnakesRegistry(field)
       const snake = snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
       expect(snakes.contains(snake)).toBeTruthy()
     })
 
-    test('sould contain all create snakes', () => {
+    test("sould contain all create snakes", () => {
       const SNAKE_COUNT = 10
       const snakes = new SnakesRegistry(field)
       const createdSnakes: Snake[] = []
@@ -37,7 +37,7 @@ describe("Snakes registry", () => {
         createdSnakes.push(snake)
       }
       expect(snakes.count).toBe(SNAKE_COUNT)
-      expect(createdSnakes.every(snake => snakes.contains(snake))).toBeTruthy()
+      expect(createdSnakes.every((snake) => snakes.contains(snake))).toBeTruthy()
     })
 
     test("should not contain unknown snake", () => {
@@ -70,9 +70,9 @@ describe("Snakes registry", () => {
       const unknownSnake = new Snake(field, 1, 2, SnakeDirection.SNAKE_DOWN)
 
       snakes.killSnake(unknownSnake)
-      
+
       expect(snakes.count).toBe(SNAKE_COUNT)
-      expect(createdSnakes.every(snake => snakes.contains(snake))).toBeTruthy()
+      expect(createdSnakes.every((snake) => snakes.contains(snake))).toBeTruthy()
     })
 
     test("killed snake should be removed from registry", () => {
