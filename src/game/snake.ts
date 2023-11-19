@@ -137,7 +137,7 @@ export class Snake {
         this.doHeadStep()
         break
       case CellEnum.BRICK:
-        this.doTailStep()
+        // do nothing
         break
       case CellEnum.POISON:
         this.doHeadStep()

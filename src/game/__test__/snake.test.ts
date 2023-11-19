@@ -312,3 +312,94 @@ describe("Snakes", () => {
     })
   })
 })
+
+describe("Snake doing step", () => {
+  let field: SnakesField
+  let snake: Snake
+
+  describe("whed field is empty", () => {
+    beforeEach(() => {
+      field = new SnakesField(3, 3)
+      snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_RIGHT)
+    })
+
+    test("snake length should not change", () => {
+      expect(snake.length).toBe(3)
+
+      snake.doStep()
+
+      expect(snake.length).toBe(3)
+    })
+
+    test("head and tail should move to its direction", () => {
+      snake.doStep()
+      expect(snake.headX).toBe(2)
+      expect(snake.headY).toBe(2)
+      expect(snake.tailX).toBe(1)
+      expect(snake.tailY).toBe(1)
+
+      snake.changeDirection(SnakeDirection.SNAKE_UP)
+      snake.doStep()
+      expect(snake.headX).toBe(2)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(1)
+      expect(snake.tailY).toBe(2)
+    })
+  })
+
+  describe("when snake eats food", () => {
+    beforeEach(() => {
+      field = new SnakesField(3, 3)
+      snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_RIGHT)
+      field.setCell(2, 2, CellEnum.FOOD)
+    })
+
+    test("it should grow", () => {
+      expect(snake.length).toBe(3)
+
+      snake.doStep()
+
+      expect(snake.length).toBe(4)
+    })
+    test("head should move but not tail", () => {
+      snake.doStep()
+      expect(snake.headX).toBe(2)
+      expect(snake.headY).toBe(2)
+      expect(snake.tailX).toBe(0)
+      expect(snake.tailY).toBe(1)
+    })
+  })
+
+  describe("when snake hits field boundary", () => {
+    beforeEach(() => {
+      field = new SnakesField(3, 3)
+      snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(SnakeDirection.SNAKE_DOWN)
+      snake.doHeadStep()
+    })
+    test("snake length should not change", () => {
+      expect(snake.length).toBe(3)
+
+      snake.doStep()
+
+      expect(snake.length).toBe(3)
+    })
+    test("it should not move", () => {
+      snake.doStep()
+      expect(snake.direction).toBe(SnakeDirection.SNAKE_DOWN)
+      expect(snake.headX).toBe(1)
+      expect(snake.headY).toBe(2)
+      expect(snake.tailX).toBe(0)
+      expect(snake.tailY).toBe(1)
+    })
+  })
+})
