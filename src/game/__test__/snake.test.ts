@@ -159,6 +159,19 @@ describe("Snakes", () => {
       const cell = field.getCell(0, 1)
       expect(cell).toBe(snake.LEFT)
     })
+    test("should do nothing when snake is dead", () => {
+      const snake = new Snake(field, 1, 1, SnakeDirection.SNAKE_LEFT)
+      snake.doTailStep()
+      expect(snake.length).toBe(0)
+
+      snake.doHeadStep()
+      expect(snake.length).toBe(0)
+      expect(snake.status).toBe(SnakeStatus.DIED)
+      expect(snake.headX).toBe(snake.tailX)
+      expect(snake.headY).toBe(snake.tailY)
+      expect(snake.headX).toBe(1)
+      expect(snake.headY).toBe(1)
+    })
   })
   describe("Changing direction", () => {
     test("when length is 1 should change snake direction and snake link", () => {
@@ -266,6 +279,20 @@ describe("Snakes", () => {
       expect(snake.tailY).toBe(1)
       const tailCell = field.getCell(snake.tailX, snake.tailY)
       expect(tailCell).toBe(snake.DOWN)
+    })
+    test("should do nothing if snake is dead", () => {
+      const snake = new Snake(field, 0, 1, SnakeDirection.SNAKE_RIGHT)
+      snake.doTailStep()
+      expect(snake.length).toBe(0)
+      expect(snake.status).toBe(SnakeStatus.DIED)
+
+      snake.doTailStep()
+      expect(snake.length).toBe(0)
+      expect(snake.status).toBe(SnakeStatus.DIED)
+      expect(snake.headX).toBe(snake.tailX)
+      expect(snake.headY).toBe(snake.tailY)
+      expect(snake.headX).toBe(0)
+      expect(snake.headY).toBe(1)
     })
   })
   describe("Dropping food at tail", () => {

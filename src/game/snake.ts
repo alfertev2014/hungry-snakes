@@ -150,6 +150,9 @@ export class Snake {
   }
 
   doHeadStep(): void {
+    if (this._length <= 0) {
+      return
+    }
     if (this._moveHeadForward()) {
       this._refreshHeadCell()
       this._length++
@@ -189,6 +192,9 @@ export class Snake {
   }
 
   _doTailStep(dropCell: CellEnum): void {
+    if (this._length <= 0 || this._status === SnakeStatus.DIED) {
+      return
+    }
     const tailCell = this.field.getCell(this._tailX, this._tailY)
     if (!cellIsSnake(tailCell)) {
       throw Error("Tail step is not valid! Tail cell is not snake.")
