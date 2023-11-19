@@ -1,6 +1,7 @@
 import { CellEnum } from "../game/cell"
+import { type SnakeStyle, type DrawingOutput } from "../game/output"
 import { type SnakeDirection } from "../game/snake"
-import { type FieldTheme, type FillStyle, type SnakeStyle } from "./theme"
+import { type DrawingSnakeStyle, type FieldTheme, type FillStyle } from "./theme"
 
 export const defaultTheme: FieldTheme = {
   background: "black",
@@ -9,33 +10,56 @@ export const defaultTheme: FieldTheme = {
   poison: "purple",
 }
 
-export class Viewport {
-  readonly canvas: HTMLCanvasElement
+export const defaultSnakeStyle: DrawingSnakeStyle = {
+  color: "green"
+}
+
+export class Viewport implements DrawingOutput {
+  readonly _canvas: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
   theme: FieldTheme
-  constructor(canvas: HTMLCanvasElement, theme: FieldTheme = defaultTheme) {
-    this.canvas = canvas
+  readonly gameWidth: number
+  readonly gameHeight: number
+  constructor(canvas: HTMLCanvasElement, gameWidth: number, gameHeight: number, theme: FieldTheme = defaultTheme) {
+    this._canvas = canvas
+    this.gameWidth = gameWidth
+    this.gameHeight = gameHeight
     this.theme = theme
 
-    const ctx = this.canvas.getContext("2d")
+    const ctx = this._canvas.getContext("2d")
     if (ctx == null) {
       throw new Error("Failed to get 2d context from canvas")
     }
     this.ctx = ctx
     this.ctx.fillStyle = this.theme.background
   }
-
+  
   get width(): number {
-    return this.canvas.width
+    return this._canvas.width
   }
 
   get height(): number {
-    return this.canvas.height
+    return this._canvas.height
+  }
+  
+  clearWithBackground(): void {
+
   }
 
-  drawCellRect(x: number, y: number, fillStyle: FillStyle): void {}
+  drawCellRect(x: number, y: number, fillStyle: FillStyle): void {
+    const w = this.width / this.gameWidth;
+    const h = this.height / this.gameHeight;
+    const screenX = x * w;
+    const screenY = y * h;
 
-  drawCell(x: number, y: number, cell: number): void {
+    this.ctx.fillStyle = fillStyle
+    this.ctx.fillRect(screenX, screenY, w, h);
+  }
+
+  drawCell(x: number, y: number, cell: CellEnum): void {
+    if (cell === CellEnum.EMPTY) {
+      return
+    }
     let cellColor: FillStyle = this.theme.background
     switch (cell) {
       case CellEnum.FOOD:
@@ -51,5 +75,15 @@ export class Viewport {
     this.drawCellRect(x, y, cellColor)
   }
 
-  drawSnakeCell(x: number, y: number, cell: SnakeDirection, snakeStyle: SnakeStyle): void {}
+  drawSnakeCell(
+    style: SnakeStyle | null,
+    x: number,
+    y: number,
+    cellNumber: number,
+    direction: SnakeDirection,
+    nextDirection?: SnakeDirection,
+  ): void {
+    const snakeStyle: DrawingSnakeStyle = style as DrawingSnakeStyle ?? defaultSnakeStyle
+    this.drawCellRect(x, y, snakeStyle.color)
+  }
 }

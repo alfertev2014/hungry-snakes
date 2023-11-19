@@ -1,3 +1,5 @@
+import { type SnakeStyle } from "../game/output"
+
 export type FillStyle = string
 
 export interface FieldTheme {
@@ -7,6 +9,6 @@ export interface FieldTheme {
   poison: FillStyle
 }
 
-export interface SnakeStyle {
+export interface DrawingSnakeStyle extends SnakeStyle {
   color: FillStyle
 }
