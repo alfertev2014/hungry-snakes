@@ -11,4 +11,5 @@ export interface FieldTheme {
 
 export interface DrawingSnakeStyle extends SnakeStyle {
   color: FillStyle
+  headColor?: FillStyle
 }

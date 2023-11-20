@@ -1,6 +1,6 @@
 import { CellEnum } from "../game/cell"
 import { type SnakeStyle, type DrawingOutput } from "../game/output"
-import { type SnakeDirection } from "../game/snake"
+import { SnakeDirection } from "../game/snake"
 import { type DrawingSnakeStyle, type FieldTheme, type FillStyle } from "./theme"
 
 export const defaultTheme: FieldTheme = {
@@ -11,7 +11,8 @@ export const defaultTheme: FieldTheme = {
 }
 
 export const defaultSnakeStyle: DrawingSnakeStyle = {
-  color: "green"
+  color: "green",
+  headColor: "magenta"
 }
 
 export class Viewport implements DrawingOutput {
@@ -86,6 +87,48 @@ export class Viewport implements DrawingOutput {
     nextDirection?: SnakeDirection,
   ): void {
     const snakeStyle: DrawingSnakeStyle = style as DrawingSnakeStyle ?? defaultSnakeStyle
-    this.drawCellRect(x, y, snakeStyle.color)
+    const w = this.width / this.gameWidth;
+    const h = this.height / this.gameHeight;
+    const screenX = x * w;
+    const screenY = y * h;
+
+    const color = cellNumber === 0 ? snakeStyle.headColor : snakeStyle.color
+
+    this.ctx.fillStyle = color ?? snakeStyle.color
+
+    switch (direction) {
+      case SnakeDirection.SNAKE_LEFT:
+          this.ctx.beginPath();
+          this.ctx.moveTo(screenX, screenY + h / 2);
+          this.ctx.lineTo(screenX + w, screenY);
+          this.ctx.lineTo(screenX + w, screenY + h);
+          this.ctx.fill();
+          break;
+      case SnakeDirection.SNAKE_RIGHT:
+          this.ctx.beginPath();
+          this.ctx.moveTo(screenX, screenY);
+          this.ctx.lineTo(screenX + w, screenY + h / 2);
+          this.ctx.lineTo(screenX, screenY + h);
+          this.ctx.fill();
+          break;
+      case SnakeDirection.SNAKE_UP:
+          this.ctx.beginPath();
+          this.ctx.moveTo(screenX, screenY + h);
+          this.ctx.lineTo(screenX + w / 2, screenY);
+          this.ctx.lineTo(screenX + w, screenY + h);
+          this.ctx.fill();
+          break;
+      case SnakeDirection.SNAKE_DOWN:
+          this.ctx.beginPath();
+          this.ctx.moveTo(screenX, screenY);
+          this.ctx.lineTo(screenX + w, screenY);
+          this.ctx.lineTo(screenX + w / 2, screenY + h);
+          this.ctx.fill();
+          break;
+      default:
+          this.ctx.fillRect(screenX, screenY, w, h);
+          break;
+    }
+
   }
 }
