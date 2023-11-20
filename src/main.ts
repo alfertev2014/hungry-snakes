@@ -46,22 +46,18 @@ function onKeyDown(e: KeyboardEvent): void {
     case 'Down':
     case 'ArrowDown':
         game.onArrowPressed(SnakeDirection.SNAKE_DOWN);
-        game.doPlayerStep()
         break;
     case 'Up':
     case 'ArrowUp':
         game.onArrowPressed(SnakeDirection.SNAKE_UP);
-        game.doPlayerStep()
         break;
     case 'Left':
     case 'ArrowLeft':
         game.onArrowPressed(SnakeDirection.SNAKE_LEFT);
-        game.doPlayerStep()
         break;
     case 'Right':
     case 'ArrowRight':
         game.onArrowPressed(SnakeDirection.SNAKE_RIGHT);
-        game.doPlayerStep()
         break;
   }
   game.draw()

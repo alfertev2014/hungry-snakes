@@ -8,21 +8,42 @@ export enum SnakeDirection {
   SNAKE_LEFT,
 }
 
-export const isOppositeDirection = (
-  directionA: SnakeDirection | undefined,
-  directionB: SnakeDirection | undefined,
-): boolean => {
-  switch (directionA) {
+export const oppositeDirectionOf = (
+  direction: SnakeDirection | undefined,
+): SnakeDirection | undefined => {
+  switch (direction) {
     case SnakeDirection.SNAKE_UP:
-      return directionB === SnakeDirection.SNAKE_DOWN
+      return SnakeDirection.SNAKE_DOWN
     case SnakeDirection.SNAKE_RIGHT:
-      return directionB === SnakeDirection.SNAKE_LEFT
+      return SnakeDirection.SNAKE_LEFT
     case SnakeDirection.SNAKE_DOWN:
-      return directionB === SnakeDirection.SNAKE_UP
+      return SnakeDirection.SNAKE_UP
     case SnakeDirection.SNAKE_LEFT:
-      return directionB === SnakeDirection.SNAKE_RIGHT
+      return SnakeDirection.SNAKE_RIGHT
   }
-  return false
+  return undefined
+}
+
+export const directionOffsetByX = (direction: SnakeDirection): number => {
+  switch (direction) {
+    case SnakeDirection.SNAKE_RIGHT:
+      return 1
+    case SnakeDirection.SNAKE_LEFT:
+      return -1
+    default:
+      return 0
+  }
+}
+
+export const directionOffsetByY = (direction: SnakeDirection): number => {
+  switch (direction) {
+    case SnakeDirection.SNAKE_UP:
+      return -1
+    case SnakeDirection.SNAKE_DOWN:
+      return 1
+    default:
+      return 0
+  }
 }
 
 export enum SnakeStatus {
@@ -117,8 +138,8 @@ export class Snake {
   }
 
   changeDirection(direction: SnakeDirection): boolean {
-    const cell = this.field.getAjacentCell(this._headX, this._headY, direction)
-    if (cellIsSnake(cell) && cell.snake === this && isOppositeDirection(direction, cell.direction)) {
+    const cell = this.field.getCell(this._headX + directionOffsetByX(direction), this._headY + directionOffsetByY(direction))
+    if (cellIsSnake(cell) && cell.snake === this && oppositeDirectionOf(direction) === cell.direction) {
       return false
     }
     this._direction = direction
@@ -127,7 +148,7 @@ export class Snake {
   }
 
   doStep(): void {
-    const nextCell = this.field.getAjacentCell(this._headX, this._headY, this._direction)
+    const nextCell = this.field.getCell(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
     switch (nextCell) {
       case CellEnum.EMPTY:
         this.doHeadStep()
@@ -204,24 +225,8 @@ export class Snake {
     if (this._length <= 0) {
       this._status = SnakeStatus.DIED
     } else {
-      this._moveTailToDirection(tailCell.direction)
-    }
-  }
-
-  _moveTailToDirection(direction: SnakeDirection): void {
-    switch (direction) {
-      case SnakeDirection.SNAKE_UP:
-        this._tailY--
-        break
-      case SnakeDirection.SNAKE_RIGHT:
-        this._tailX++
-        break
-      case SnakeDirection.SNAKE_DOWN:
-        this._tailY++
-        break
-      case SnakeDirection.SNAKE_LEFT:
-        this._tailX--
-        break
+      this._tailX += directionOffsetByX(tailCell.direction)
+      this._tailY += directionOffsetByY(tailCell.direction)
     }
   }
 
@@ -234,17 +239,16 @@ export class Snake {
   }
 
   cut(x: number, y: number): void {
-    while (this._tailX !== x && this._tailY !== y) {
+    while (this._tailX !== x || this._tailY !== y) {
       this.dropFood()
     }
-    this.doTailStep()
+    this.dropFood()
   }
 
   doBite(snake: Snake | undefined): void {
     if (snake != null) {
-      this._moveHeadForward()
-      snake.cut(this._headX, this._headY)
-      this._refreshHeadCell()
+      snake.cut(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
+      this.doHeadStep()
     }
   }
 }

@@ -41,7 +41,9 @@ export class SnakesGame {
   }
 
   onArrowPressed(direction: SnakeDirection): void {
-    this._playerSnake?.changeDirection(direction)
+    if ((this._playerSnake?.changeDirection(direction)) ?? false) {
+      this.doPlayerStep()
+    }
   }
 
   doPlayerStep(): void {
