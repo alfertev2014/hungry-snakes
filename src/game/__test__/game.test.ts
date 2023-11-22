@@ -13,11 +13,15 @@ describe("Creating game", () => {
     const game = new SnakesGame(3, 3)
     expect(game.snakesCount).toBe(0)
   })
-
+  test("should have no player snake", () => {
+    const game = new SnakesGame(3, 3)
+    expect(game.isPlayerAlive).toBeFalsy()
+  })
   test("should have 1 snake after creating player snake", () => {
     const game = new SnakesGame(3, 3)
     game.createPlayerSnake(1, 1, Direction.UP)
     expect(game.snakesCount).toBe(1)
+    expect(game.isPlayerAlive).toBeTruthy()
   })
   test("should allow placing cells on the field", () => {
     const game = new SnakesGame(3, 3)
@@ -107,5 +111,33 @@ describe("Drawing game", () => {
     expect(output.drawSnakeCell).toHaveBeenNthCalledWith(3, null, 0, 2, 2, Direction.UP, Direction.LEFT)
     expect(output.drawSnakeCell).toHaveBeenNthCalledWith(4, null, 0, 1, 1, Direction.RIGHT, Direction.UP)
     expect(output.drawSnakeCell).toHaveBeenNthCalledWith(5, null, 1, 1, 0, Direction.RIGHT, Direction.RIGHT)
+  })
+})
+
+describe("Ticking game", () => {
+  test("should not change game if no snakes on field", () => {
+    const game = new SnakesGame(2, 2)
+    game.putCell(0, 0, CellEnum.FOOD)
+    game.putCell(0, 1, CellEnum.BRICK)
+    game.putCell(1, 0, CellEnum.POISON)
+
+    game.tick()
+
+    expect(game.getCell(0, 0)).toBe(CellEnum.FOOD)
+    expect(game.getCell(0, 1)).toBe(CellEnum.BRICK)
+    expect(game.getCell(1, 0)).toBe(CellEnum.POISON)
+    expect(game.getCell(1, 1)).toBe(CellEnum.EMPTY)
+
+    expect(game.snakesCount).toBe(0)
+    expect(game.isPlayerAlive).toBeFalsy()
+  })
+  test("should do player snake step to its direction", () => {
+    const game = new SnakesGame(2, 2)
+    game.createPlayerSnake(0, 0, Direction.RIGHT)
+
+    game.tick()
+
+    expect(game.getCell(1, 0)).toBe(game.playerSnake?.RIGHT)
+    expect(game.getCell(0, 0)).toBe(CellEnum.EMPTY)
   })
 })
