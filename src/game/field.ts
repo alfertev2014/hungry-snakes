@@ -1,6 +1,6 @@
 import { CellEnum, type CellType } from "./cell"
 
-export class SnakesField {
+export class GameField {
   readonly width: number
   readonly height: number
   readonly _cells: CellType[]

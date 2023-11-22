@@ -1,15 +1,15 @@
 import { describe, expect, test, beforeEach } from "@jest/globals"
-import { SnakesField } from "../field"
+import { GameField } from "../field"
 import { Snake, SnakeStatus } from "../snake"
 import { DIRECTIONS } from "./const"
 import { CellEnum } from "../cell"
 import { Direction } from "../direction"
 
 describe("Snakes", () => {
-  let field: SnakesField
+  let field: GameField
 
   beforeEach(() => {
-    field = new SnakesField(3, 3)
+    field = new GameField(3, 3)
   })
 
   describe("Created snake", () => {
@@ -315,12 +315,12 @@ describe("Snakes", () => {
 })
 
 describe("Snake doing step", () => {
-  let field: SnakesField
+  let field: GameField
   let snake: Snake
 
   describe("whed field is empty", () => {
     beforeEach(() => {
-      field = new SnakesField(3, 3)
+      field = new GameField(3, 3)
       snake = new Snake(field, 0, 1, Direction.RIGHT)
       snake.doHeadStep()
       snake.changeDirection(Direction.DOWN)
@@ -354,7 +354,7 @@ describe("Snake doing step", () => {
 
   describe("when snake eats food", () => {
     beforeEach(() => {
-      field = new SnakesField(3, 3)
+      field = new GameField(3, 3)
       snake = new Snake(field, 0, 1, Direction.RIGHT)
       snake.doHeadStep()
       snake.changeDirection(Direction.DOWN)
@@ -381,7 +381,7 @@ describe("Snake doing step", () => {
 
   describe("when snake hits field boundary", () => {
     beforeEach(() => {
-      field = new SnakesField(3, 3)
+      field = new GameField(3, 3)
       snake = new Snake(field, 0, 1, Direction.RIGHT)
       snake.doHeadStep()
       snake.changeDirection(Direction.DOWN)
@@ -406,7 +406,7 @@ describe("Snake doing step", () => {
 
   describe("when snake bite itself", () => {
     beforeEach(() => {
-      field = new SnakesField(3, 3)
+      field = new GameField(3, 3)
     })
     test("when bite to tail cell should behave as regular step", () => {
       const snake = new Snake(field, 0, 0, Direction.RIGHT)

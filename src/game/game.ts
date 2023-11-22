@@ -1,17 +1,17 @@
 import { type CellEnum, type CellType, cellIsSnake } from "./cell"
 import { type Direction } from "./direction"
-import { SnakesField } from "./field"
+import { GameField } from "./field"
 import { type DrawingOutput } from "./output"
 import { type Snake } from "./snake"
 import { SnakesRegistry } from "./snakesRegistry"
 
 export class SnakesGame {
-  _field: SnakesField
+  _field: GameField
   _snakesRegistry: SnakesRegistry
   _playerSnake: Snake | null
   output: DrawingOutput | null
   constructor(width: number, height: number) {
-    this._field = new SnakesField(width, height)
+    this._field = new GameField(width, height)
     this._snakesRegistry = new SnakesRegistry(this._field)
     this._playerSnake = null
     this.output = null

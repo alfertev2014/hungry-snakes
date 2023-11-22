@@ -1,13 +1,13 @@
 import { cellIsSnake } from "./cell"
 import { Direction } from "./direction"
-import { type SnakesField } from "./field"
+import { type GameField } from "./field"
 import { type DrawingOutput } from "./output"
 import { Snake } from "./snake"
 
 export class SnakesRegistry {
-  readonly _field: SnakesField
+  readonly _field: GameField
   readonly _snakes: Snake[]
-  constructor(field: SnakesField) {
+  constructor(field: GameField) {
     this._field = field
     this._snakes = []
   }

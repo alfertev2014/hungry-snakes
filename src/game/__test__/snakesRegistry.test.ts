@@ -1,14 +1,14 @@
 import { describe, expect, test, beforeEach } from "@jest/globals"
 import { SnakesRegistry } from "../snakesRegistry"
-import { SnakesField } from "../field"
+import { GameField } from "../field"
 import { Snake } from "../snake"
 import { Direction } from "../direction"
 
 describe("Snakes registry", () => {
-  let field: SnakesField
+  let field: GameField
 
   beforeEach(() => {
-    field = new SnakesField(2, 3)
+    field = new GameField(2, 3)
   })
 
   test("should be empty when created", () => {

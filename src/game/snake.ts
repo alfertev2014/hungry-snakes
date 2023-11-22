@@ -1,6 +1,6 @@
 import { CellEnum, cellIsSnake } from "./cell"
 import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "./direction"
-import { type SnakesField } from "./field"
+import { type GameField } from "./field"
 
 export enum SnakeStatus {
   NEW,
@@ -8,7 +8,7 @@ export enum SnakeStatus {
 }
 
 export class Snake {
-  readonly field: SnakesField
+  readonly field: GameField
 
   _headX: number
   _headY: number
@@ -24,7 +24,7 @@ export class Snake {
   readonly RIGHT: SnakeCell
   readonly DOWN: SnakeCell
   readonly LEFT: SnakeCell
-  constructor(field: SnakesField, headX: number, headY: number, direction: Direction) {
+  constructor(field: GameField, headX: number, headY: number, direction: Direction) {
     if (headX < 0 || headX >= field.width) {
       throw new Error("Creating snake: headX is out of field dimention")
     }

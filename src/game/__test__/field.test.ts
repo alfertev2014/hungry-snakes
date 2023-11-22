@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeAll } from "@jest/globals"
-import { SnakesField } from "../field"
+import { GameField } from "../field"
 import { CellEnum } from "../cell"
 import { NON_SNAKE_CELL_TYPES, DIRECTIONS } from "./const"
 import { Snake } from "../snake"
@@ -9,28 +9,28 @@ describe("Just created field", () => {
   test("should be with positive dimentions", () => {
     expect(() => {
       // eslint-disable-next-line no-new
-      new SnakesField(0, 0)
+      new GameField(0, 0)
     }).toThrow()
     expect(() => {
       // eslint-disable-next-line no-new
-      new SnakesField(0, 42)
+      new GameField(0, 42)
     }).toThrow()
     expect(() => {
       // eslint-disable-next-line no-new
-      new SnakesField(24, 0)
+      new GameField(24, 0)
     }).toThrow()
     expect(() => {
       // eslint-disable-next-line no-new
-      new SnakesField(-1, 66)
+      new GameField(-1, 66)
     }).toThrow()
     expect(() => {
       // eslint-disable-next-line no-new
-      new SnakesField(100500, -2)
+      new GameField(100500, -2)
     }).toThrow()
   })
 
   test("should contain only empty cells", () => {
-    const field = new SnakesField(2, 2)
+    const field = new GameField(2, 2)
     expect(field.getCell(0, 0)).toBe(CellEnum.EMPTY)
     expect(field.getCell(0, 1)).toBe(CellEnum.EMPTY)
     expect(field.getCell(1, 0)).toBe(CellEnum.EMPTY)
@@ -40,7 +40,7 @@ describe("Just created field", () => {
 
 describe("Field as cell storage", () => {
   test("should store any value in any cell", () => {
-    const field = new SnakesField(2, 3)
+    const field = new GameField(2, 3)
     const snake = new Snake(field, 1, 1, Direction.DOWN)
     for (let x = 0; x < 2; ++x) {
       for (let y = 0; y < 3; ++y) {
@@ -60,11 +60,11 @@ describe("Field as cell storage", () => {
   })
 
   describe("should get brick adjacent cells at boundaries", () => {
-    let field: SnakesField
+    let field: GameField
     const boundaryCell = CellEnum.BRICK
 
     beforeAll(() => {
-      field = new SnakesField(3, 3)
+      field = new GameField(3, 3)
     })
 
     test("for up case", () => {
