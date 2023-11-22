@@ -29,23 +29,26 @@ describe("Snakes registry", () => {
       expect(snakes.contains(snake)).toBeTruthy()
     })
 
-    test("sould contain all create snakes", () => {
-      const SNAKE_COUNT = 10
+    test("sould contain all created snakes", () => {
+      const SNAKE_COUNT = 6
       const snakes = new SnakesRegistry(field)
       const createdSnakes: Snake[] = []
-      for (let i = 0; i < SNAKE_COUNT; ++i) {
-        const snake = snakes.createSnake(1, 1, Direction.UP)
-        createdSnakes.push(snake)
+      for (let y = 0; y < 3; ++y) {
+        for (let x = 0; x < 2; ++x) {
+          const snake = snakes.createSnake(x, y, Direction.UP)
+          createdSnakes.push(snake)
+        }
       }
       expect(snakes.count).toBe(SNAKE_COUNT)
       expect(createdSnakes.every((snake) => snakes.contains(snake))).toBeTruthy()
     })
 
     test("should not contain unknown snake", () => {
-      const SNAKE_COUNT = 10
       const snakes = new SnakesRegistry(field)
-      for (let i = 0; i < SNAKE_COUNT; ++i) {
-        snakes.createSnake(1, 1, Direction.UP)
+      for (let y = 0; y < 2; ++y) {
+        for (let x = 0; x < 2; ++x) {
+          snakes.createSnake(x, y, Direction.UP)
+        }
       }
 
       const unknownSnake = new Snake(field, 1, 2, Direction.DOWN)
@@ -54,16 +57,18 @@ describe("Snakes registry", () => {
   })
 
   describe("When killing snakes", () => {
-    const SNAKE_COUNT = 10
+    const SNAKE_COUNT = 4
     let snakes: SnakesRegistry
     let createdSnakes: Snake[]
 
     beforeEach(() => {
       snakes = new SnakesRegistry(field)
       createdSnakes = []
-      for (let i = 0; i < SNAKE_COUNT; ++i) {
-        const snake = snakes.createSnake(1, 1, Direction.UP)
-        createdSnakes.push(snake)
+      for (let y = 0; y < 2; ++y) {
+        for (let x = 0; x < 2; ++x) {
+          const snake = snakes.createSnake(x, y, Direction.UP)
+          createdSnakes.push(snake)
+        }
       }
     })
 

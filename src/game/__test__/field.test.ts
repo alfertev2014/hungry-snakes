@@ -59,9 +59,9 @@ describe("Field as cell storage", () => {
     }
   })
 
-  describe("should get brick adjacent cells at boundaries", () => {
+  describe("should get BOUNDARY adjacent cells at boundaries", () => {
     let field: GameField
-    const boundaryCell = CellEnum.BRICK
+    const boundaryCell = CellEnum.BOUNDARY
 
     beforeAll(() => {
       field = new GameField(3, 3)

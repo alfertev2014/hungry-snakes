@@ -18,7 +18,7 @@ export class GameField {
 
   getCell(x: number, y: number): CellType {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
-      return CellEnum.BRICK
+      return CellEnum.BOUNDARY
     }
     return this._cells[x + y * this.width]
   }

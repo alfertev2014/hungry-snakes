@@ -70,6 +70,19 @@ describe("Snakes", () => {
       const cell = field.getCell(0, 0)
       expect(cell).toBe(snake.LEFT)
     })
+
+    test("should not be allowed in place of already existing snakes", () => {
+      const snake = new Snake(field, 1, 1, Direction.DOWN)
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new Snake(field, 1, 1, Direction.UP)
+      }).toThrow()
+      snake.doHeadStep()
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new Snake(field, 1, 2, Direction.UP)
+      }).toThrow()
+    })
   })
 
   describe("Doing head step", () => {
@@ -172,6 +185,21 @@ describe("Snakes", () => {
       expect(snake.headY).toBe(snake.tailY)
       expect(snake.headX).toBe(1)
       expect(snake.headY).toBe(1)
+    })
+    test("should not be allowed right thru the snake cell", () => {
+      const snake1 = new Snake(field, 1, 1, Direction.LEFT)
+      const snake2 = new Snake(field, 1, 2, Direction.UP)
+      expect(() => {
+        snake2.doHeadStep()
+      }).toThrow()
+    })
+    test("should do nothing when trying to step to boundary", () => {
+      const snake = new Snake(field, 1, 0, Direction.UP)
+      snake.doHeadStep()
+
+      expect(snake.headX).toBe(1)
+      expect(snake.headY).toBe(0)
+      expect(snake.length).toBe(1)
     })
   })
   describe("Changing direction", () => {

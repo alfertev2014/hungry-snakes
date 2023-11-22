@@ -1,4 +1,4 @@
-import { CellEnum, cellIsSnake } from "./cell"
+import { CellEnum, type CellType, cellIsSnake } from "./cell"
 import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "./direction"
 import { type GameField } from "./field"
 
@@ -30,6 +30,9 @@ export class Snake {
     }
     if (headY < 0 || headY >= field.height) {
       throw new Error("Creating snake: headY is out of field dimention")
+    }
+    if (cellIsSnake(field.getCell(headX, headY))) {
+      throw new Error("Creating snake in place of already existing snake")
     }
     this.field = field
     this._headX = headX
@@ -93,8 +96,12 @@ export class Snake {
     this.field.setCell(this._headX, this._headY, this.getSnakeCell(this._direction))
   }
 
+  nextHeadCell(direction: Direction): CellType {
+    return this.field.getCell(this._headX + directionOffsetByX(direction), this._headY + directionOffsetByY(direction))
+  }
+
   changeDirection(direction: Direction): boolean {
-    const cell = this.field.getCell(this._headX + directionOffsetByX(direction), this._headY + directionOffsetByY(direction))
+    const cell = this.nextHeadCell(direction)
     if (cellIsSnake(cell) && cell.snake === this && oppositeDirectionOf(direction) === cell.direction) {
       return false
     }
@@ -104,20 +111,21 @@ export class Snake {
   }
 
   doStep(): void {
-    const nextCell = this.field.getCell(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
+    const nextCell = this.nextHeadCell(this._direction)
     switch (nextCell) {
       case CellEnum.EMPTY:
-        this.doHeadStep()
+        this._doHeadStep()
         this.doTailStep()
         break
       case CellEnum.FOOD:
-        this.doHeadStep()
+        this._doHeadStep()
         break
+      case CellEnum.BOUNDARY:
       case CellEnum.BRICK:
         // do nothing
         break
       case CellEnum.POISON:
-        this.doHeadStep()
+        this._doHeadStep()
         this.doTailStep()
         this.doTailStep()
         break
@@ -126,46 +134,24 @@ export class Snake {
     }
   }
 
-  doHeadStep(): void {
-    if (this._length <= 0) {
+  _doHeadStep(): void {
+    if (this._length <= 0 || this._status === SnakeStatus.DIED) {
       return
     }
-    if (this._moveHeadForward()) {
-      this._refreshHeadCell()
-      this._length++
-    }
+    this._headX += directionOffsetByX(this._direction)
+    this._headY += directionOffsetByY(this._direction)
+    this._refreshHeadCell()
+    this._length++
   }
 
-  _moveHeadForward(): boolean {
-    switch (this._direction) {
-      case Direction.UP:
-        if (this._headY === 0) {
-          return false
-        }
-        this._headY--
-        break
-      case Direction.RIGHT:
-        if (this._headX === this.field.width - 1) {
-          return false
-        }
-        this._headX++
-        break
-      case Direction.DOWN:
-        if (this._headY === this.field.height - 1) {
-          return false
-        }
-        this._headY++
-        break
-      case Direction.LEFT:
-        if (this._headX === 0) {
-          return false
-        }
-        this._headX--
-        break
-      default:
-        return false
+  doHeadStep(): void {
+    const nextCell = this.nextHeadCell(this._direction)
+    if (cellIsSnake(nextCell)) {
+      throw new Error("Doing head step into snake cell")
     }
-    return true
+    if (nextCell !== CellEnum.BOUNDARY) {
+      this._doHeadStep()
+    }
   }
 
   _doTailStep(dropCell: CellEnum): void {
@@ -204,7 +190,7 @@ export class Snake {
   doBite(snake: Snake | undefined): void {
     if (snake != null) {
       snake.cut(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
-      this.doHeadStep()
+      this._doHeadStep()
     }
   }
 }
