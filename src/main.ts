@@ -16,7 +16,7 @@ const HEIGHT = 80
 const viewport = new Viewport(canvas as HTMLCanvasElement, WIDTH, HEIGHT)
 
 function random(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min) + min);
+  return Math.floor(Math.random() * (max - min) + min)
 }
 
 const game = new SnakesGame(WIDTH, HEIGHT)
@@ -40,27 +40,27 @@ game.draw()
 
 function onKeyDown(e: KeyboardEvent): void {
   if (e.isComposing || e.keyCode === 229) {
-    return;
+    return
   }
-  switch(e.key) {
-    case 'Down':
-    case 'ArrowDown':
-        game.onArrowPressed(Direction.DOWN);
-        break;
-    case 'Up':
-    case 'ArrowUp':
-        game.onArrowPressed(Direction.UP);
-        break;
-    case 'Left':
-    case 'ArrowLeft':
-        game.onArrowPressed(Direction.LEFT);
-        break;
-    case 'Right':
-    case 'ArrowRight':
-        game.onArrowPressed(Direction.RIGHT);
-        break;
+  switch (e.key) {
+    case "Down":
+    case "ArrowDown":
+      game.onArrowPressed(Direction.DOWN)
+      break
+    case "Up":
+    case "ArrowUp":
+      game.onArrowPressed(Direction.UP)
+      break
+    case "Left":
+    case "ArrowLeft":
+      game.onArrowPressed(Direction.LEFT)
+      break
+    case "Right":
+    case "ArrowRight":
+      game.onArrowPressed(Direction.RIGHT)
+      break
   }
   game.draw()
 }
 
-window.addEventListener('keydown', onKeyDown);
+window.addEventListener("keydown", onKeyDown)

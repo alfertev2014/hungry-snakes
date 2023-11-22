@@ -5,9 +5,7 @@ export enum Direction {
   LEFT,
 }
 
-export const oppositeDirectionOf = (
-  direction: Direction | undefined,
-): Direction | undefined => {
+export const oppositeDirectionOf = (direction: Direction | undefined): Direction | undefined => {
   switch (direction) {
     case Direction.UP:
       return Direction.DOWN

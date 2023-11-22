@@ -12,7 +12,7 @@ export const defaultTheme: FieldTheme = {
 
 export const defaultSnakeStyle: DrawingSnakeStyle = {
   color: "green",
-  headColor: "magenta"
+  headColor: "magenta",
 }
 
 export class Viewport implements DrawingOutput {
@@ -34,7 +34,7 @@ export class Viewport implements DrawingOutput {
     this.ctx = ctx
     this.ctx.fillStyle = this.theme.background
   }
-  
+
   get width(): number {
     return this._canvas.width
   }
@@ -42,21 +42,20 @@ export class Viewport implements DrawingOutput {
   get height(): number {
     return this._canvas.height
   }
-  
-  clearWithBackground(): void {
 
+  clearWithBackground(): void {
     this.ctx.fillStyle = this.theme.background
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.fillRect(0, 0, this.width, this.height)
   }
 
   drawCellRect(x: number, y: number, fillStyle: FillStyle): void {
-    const w = this.width / this.gameWidth;
-    const h = this.height / this.gameHeight;
-    const screenX = x * w;
-    const screenY = y * h;
+    const w = this.width / this.gameWidth
+    const h = this.height / this.gameHeight
+    const screenX = x * w
+    const screenY = y * h
 
     this.ctx.fillStyle = fillStyle
-    this.ctx.fillRect(screenX, screenY, w, h);
+    this.ctx.fillRect(screenX, screenY, w, h)
   }
 
   drawCell(x: number, y: number, cell: CellEnum): void {
@@ -86,11 +85,11 @@ export class Viewport implements DrawingOutput {
     direction: Direction,
     nextDirection?: Direction,
   ): void {
-    const snakeStyle: DrawingSnakeStyle = style as DrawingSnakeStyle ?? defaultSnakeStyle
-    const w = this.width / this.gameWidth;
-    const h = this.height / this.gameHeight;
-    const screenX = x * w;
-    const screenY = y * h;
+    const snakeStyle: DrawingSnakeStyle = (style as DrawingSnakeStyle) ?? defaultSnakeStyle
+    const w = this.width / this.gameWidth
+    const h = this.height / this.gameHeight
+    const screenX = x * w
+    const screenY = y * h
 
     const color = cellNumber === 0 ? snakeStyle.headColor : snakeStyle.color
 
@@ -98,37 +97,36 @@ export class Viewport implements DrawingOutput {
 
     switch (direction) {
       case Direction.LEFT:
-          this.ctx.beginPath();
-          this.ctx.moveTo(screenX, screenY + h / 2);
-          this.ctx.lineTo(screenX + w, screenY);
-          this.ctx.lineTo(screenX + w, screenY + h);
-          this.ctx.fill();
-          break;
+        this.ctx.beginPath()
+        this.ctx.moveTo(screenX, screenY + h / 2)
+        this.ctx.lineTo(screenX + w, screenY)
+        this.ctx.lineTo(screenX + w, screenY + h)
+        this.ctx.fill()
+        break
       case Direction.RIGHT:
-          this.ctx.beginPath();
-          this.ctx.moveTo(screenX, screenY);
-          this.ctx.lineTo(screenX + w, screenY + h / 2);
-          this.ctx.lineTo(screenX, screenY + h);
-          this.ctx.fill();
-          break;
+        this.ctx.beginPath()
+        this.ctx.moveTo(screenX, screenY)
+        this.ctx.lineTo(screenX + w, screenY + h / 2)
+        this.ctx.lineTo(screenX, screenY + h)
+        this.ctx.fill()
+        break
       case Direction.UP:
-          this.ctx.beginPath();
-          this.ctx.moveTo(screenX, screenY + h);
-          this.ctx.lineTo(screenX + w / 2, screenY);
-          this.ctx.lineTo(screenX + w, screenY + h);
-          this.ctx.fill();
-          break;
+        this.ctx.beginPath()
+        this.ctx.moveTo(screenX, screenY + h)
+        this.ctx.lineTo(screenX + w / 2, screenY)
+        this.ctx.lineTo(screenX + w, screenY + h)
+        this.ctx.fill()
+        break
       case Direction.DOWN:
-          this.ctx.beginPath();
-          this.ctx.moveTo(screenX, screenY);
-          this.ctx.lineTo(screenX + w, screenY);
-          this.ctx.lineTo(screenX + w / 2, screenY + h);
-          this.ctx.fill();
-          break;
+        this.ctx.beginPath()
+        this.ctx.moveTo(screenX, screenY)
+        this.ctx.lineTo(screenX + w, screenY)
+        this.ctx.lineTo(screenX + w / 2, screenY + h)
+        this.ctx.fill()
+        break
       default:
-          this.ctx.fillRect(screenX, screenY, w, h);
-          break;
+        this.ctx.fillRect(screenX, screenY, w, h)
+        break
     }
-
   }
 }

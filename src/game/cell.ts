@@ -1,12 +1,11 @@
 import { SnakeCell } from "./snake"
 
-
 export enum CellEnum {
   EMPTY,
   FOOD,
   BRICK,
   POISON,
-  BOUNDARY
+  BOUNDARY,
 }
 
 export type CellType = CellEnum | SnakeCell

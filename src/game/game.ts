@@ -16,23 +16,23 @@ export class SnakesGame {
     this._playerSnake = null
     this.output = null
   }
-  
+
   get width(): number {
     return this._field.width
   }
-  
+
   get height(): number {
     return this._field.height
   }
-  
+
   get snakesCount(): number {
     return this._snakesRegistry.count
   }
-  
+
   get isPlayerAlive(): boolean {
     return this._playerSnake !== null
   }
-  
+
   putCell(x: number, y: number, cell: CellEnum): void {
     this._field.setCell(x, y, cell)
   }
@@ -54,7 +54,7 @@ export class SnakesGame {
   }
 
   onArrowPressed(direction: Direction): void {
-    if ((this._playerSnake?.changeDirection(direction)) ?? false) {
+    if (this._playerSnake?.changeDirection(direction) ?? false) {
       this.doPlayerStep()
     }
   }
