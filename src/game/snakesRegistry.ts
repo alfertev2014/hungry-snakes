@@ -1,7 +1,8 @@
 import { cellIsSnake } from "./cell"
+import { Direction } from "./direction"
 import { type SnakesField } from "./field"
 import { type DrawingOutput } from "./output"
-import { Snake, SnakeDirection } from "./snake"
+import { Snake } from "./snake"
 
 export class SnakesRegistry {
   readonly _field: SnakesField
@@ -15,7 +16,7 @@ export class SnakesRegistry {
     return this._snakes.length
   }
 
-  createSnake(x: number, y: number, direction: SnakeDirection): Snake {
+  createSnake(x: number, y: number, direction: Direction): Snake {
     const snake = new Snake(this._field, x, y, direction)
     this._snakes.push(snake)
     return snake
@@ -38,7 +39,7 @@ export class SnakesRegistry {
         let x = snake.tailX
         let y = snake.tailY
         let cellNumber = snake.length - 1
-        let nextDirection: SnakeDirection | undefined
+        let nextDirection: Direction | undefined
 
         while (cellNumber >= 0) {
           const cell = this._field.getCell(x, y)
@@ -49,16 +50,16 @@ export class SnakesRegistry {
           nextDirection = cell.direction
           cellNumber--
           switch (nextDirection) {
-            case SnakeDirection.SNAKE_UP:
+            case Direction.UP:
               y--
               break
-            case SnakeDirection.SNAKE_RIGHT:
+            case Direction.RIGHT:
               x++
               break
-            case SnakeDirection.SNAKE_DOWN:
+            case Direction.DOWN:
               y++
               break
-            case SnakeDirection.SNAKE_LEFT:
+            case Direction.LEFT:
               x--
               break
           }

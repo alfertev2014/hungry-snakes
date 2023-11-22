@@ -1,8 +1,9 @@
 import { describe, expect, test, beforeAll } from "@jest/globals"
 import { SnakesField } from "../field"
 import { CellEnum } from "../cell"
-import { NON_SNAKE_CELL_TYPES, SNAKE_DIRECTIONS } from "./const"
-import { Snake, SnakeDirection } from "../snake"
+import { NON_SNAKE_CELL_TYPES, DIRECTIONS } from "./const"
+import { Snake } from "../snake"
+import { Direction } from "../direction"
 
 describe("Just created field", () => {
   test("should be with positive dimentions", () => {
@@ -40,10 +41,10 @@ describe("Just created field", () => {
 describe("Field as cell storage", () => {
   test("should store any value in any cell", () => {
     const field = new SnakesField(2, 3)
-    const snake = new Snake(field, 1, 1, SnakeDirection.SNAKE_DOWN)
+    const snake = new Snake(field, 1, 1, Direction.DOWN)
     for (let x = 0; x < 2; ++x) {
       for (let y = 0; y < 3; ++y) {
-        for (const direction of SNAKE_DIRECTIONS) {
+        for (const direction of DIRECTIONS) {
           const value = snake.getSnakeCell(direction)
           expect(field.getCell(x, y)).not.toBe(value)
           field.setCell(x, y, value)

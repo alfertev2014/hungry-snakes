@@ -1,7 +1,7 @@
 import { describe, expect, test, jest } from "@jest/globals"
 import { SnakesGame } from "../game"
-import { SnakeDirection } from "../snake"
 import { CellEnum } from "../cell"
+import { Direction } from "../direction"
 
 describe("Creating game", () => {
   test("should have specified dimensions", () => {
@@ -16,7 +16,7 @@ describe("Creating game", () => {
 
   test("should have 1 snake after creating player snake", () => {
     const game = new SnakesGame(3, 3)
-    game.createPlayerSnake(1, 1, SnakeDirection.SNAKE_UP)
+    game.createPlayerSnake(1, 1, Direction.UP)
     expect(game.snakesCount).toBe(1)
   })
   test("should allow placing cells on the field", () => {
@@ -58,7 +58,7 @@ describe("Drawing game", () => {
     game.putCell(0, 0, CellEnum.FOOD)
     game.putCell(0, 1, CellEnum.BRICK)
     game.putCell(1, 0, CellEnum.POISON)
-    game.createPlayerSnake(1, 1, SnakeDirection.SNAKE_UP)
+    game.createPlayerSnake(1, 1, Direction.UP)
     const output = {
       clearWithBackground: jest.fn(),
       drawCell: jest.fn(),
@@ -77,7 +77,7 @@ describe("Drawing game", () => {
     expect(output.drawSnakeCell.mock.calls[0][1]).toBe(1)
     expect(output.drawSnakeCell.mock.calls[0][2]).toBe(1)
     expect(output.drawSnakeCell.mock.calls[0][3]).toBe(0)
-    expect(output.drawSnakeCell.mock.calls[0][4]).toBe(SnakeDirection.SNAKE_UP)
+    expect(output.drawSnakeCell.mock.calls[0][4]).toBe(Direction.UP)
   })
 
   test("should draw snake from tail to head", () => {
@@ -87,11 +87,11 @@ describe("Drawing game", () => {
         game.putCell(x, y, CellEnum.FOOD)
       }
     }
-    game.createPlayerSnake(2, 2, SnakeDirection.SNAKE_LEFT)
-    game.onArrowPressed(SnakeDirection.SNAKE_LEFT)
+    game.createPlayerSnake(2, 2, Direction.LEFT)
+    game.onArrowPressed(Direction.LEFT)
     game.doPlayerStep()
-    game.onArrowPressed(SnakeDirection.SNAKE_UP)
-    game.onArrowPressed(SnakeDirection.SNAKE_RIGHT)
+    game.onArrowPressed(Direction.UP)
+    game.onArrowPressed(Direction.RIGHT)
 
     const output = {
       clearWithBackground: jest.fn(),
@@ -108,31 +108,31 @@ describe("Drawing game", () => {
     expect(output.drawSnakeCell.mock.calls[0][1]).toBe(2)
     expect(output.drawSnakeCell.mock.calls[0][2]).toBe(2)
     expect(output.drawSnakeCell.mock.calls[0][3]).toBe(4)
-    expect(output.drawSnakeCell.mock.calls[0][4]).toBe(SnakeDirection.SNAKE_LEFT)
+    expect(output.drawSnakeCell.mock.calls[0][4]).toBe(Direction.LEFT)
     expect(output.drawSnakeCell.mock.calls[0][5]).toBeUndefined()
 
     expect(output.drawSnakeCell.mock.calls[1][1]).toBe(1)
     expect(output.drawSnakeCell.mock.calls[1][2]).toBe(2)
     expect(output.drawSnakeCell.mock.calls[1][3]).toBe(3)
-    expect(output.drawSnakeCell.mock.calls[1][4]).toBe(SnakeDirection.SNAKE_LEFT)
-    expect(output.drawSnakeCell.mock.calls[1][5]).toBe(SnakeDirection.SNAKE_LEFT)
+    expect(output.drawSnakeCell.mock.calls[1][4]).toBe(Direction.LEFT)
+    expect(output.drawSnakeCell.mock.calls[1][5]).toBe(Direction.LEFT)
 
     expect(output.drawSnakeCell.mock.calls[2][1]).toBe(0)
     expect(output.drawSnakeCell.mock.calls[2][2]).toBe(2)
     expect(output.drawSnakeCell.mock.calls[2][3]).toBe(2)
-    expect(output.drawSnakeCell.mock.calls[2][4]).toBe(SnakeDirection.SNAKE_UP)
-    expect(output.drawSnakeCell.mock.calls[2][5]).toBe(SnakeDirection.SNAKE_LEFT)
+    expect(output.drawSnakeCell.mock.calls[2][4]).toBe(Direction.UP)
+    expect(output.drawSnakeCell.mock.calls[2][5]).toBe(Direction.LEFT)
 
     expect(output.drawSnakeCell.mock.calls[3][1]).toBe(0)
     expect(output.drawSnakeCell.mock.calls[3][2]).toBe(1)
     expect(output.drawSnakeCell.mock.calls[3][3]).toBe(1)
-    expect(output.drawSnakeCell.mock.calls[3][4]).toBe(SnakeDirection.SNAKE_RIGHT)
-    expect(output.drawSnakeCell.mock.calls[3][5]).toBe(SnakeDirection.SNAKE_UP)
+    expect(output.drawSnakeCell.mock.calls[3][4]).toBe(Direction.RIGHT)
+    expect(output.drawSnakeCell.mock.calls[3][5]).toBe(Direction.UP)
 
     expect(output.drawSnakeCell.mock.calls[4][1]).toBe(1)
     expect(output.drawSnakeCell.mock.calls[4][2]).toBe(1)
     expect(output.drawSnakeCell.mock.calls[4][3]).toBe(0)
-    expect(output.drawSnakeCell.mock.calls[4][4]).toBe(SnakeDirection.SNAKE_RIGHT)
-    expect(output.drawSnakeCell.mock.calls[4][5]).toBe(SnakeDirection.SNAKE_RIGHT)
+    expect(output.drawSnakeCell.mock.calls[4][4]).toBe(Direction.RIGHT)
+    expect(output.drawSnakeCell.mock.calls[4][5]).toBe(Direction.RIGHT)
   })
 })

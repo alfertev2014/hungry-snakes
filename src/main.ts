@@ -1,6 +1,6 @@
 import { CellEnum } from "./game/cell"
+import { Direction } from "./game/direction"
 import { SnakesGame } from "./game/game"
-import { SnakeDirection } from "./game/snake"
 import "./style.css"
 
 import { Viewport } from "./ui/viewport"
@@ -34,7 +34,7 @@ for (let i = 0; i < 10; ++i) {
   game.putCell(random(0, WIDTH), random(0, HEIGHT), CellEnum.POISON)
 }
 
-game.createPlayerSnake(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2), SnakeDirection.SNAKE_UP)
+game.createPlayerSnake(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2), Direction.UP)
 
 game.draw()
 
@@ -45,19 +45,19 @@ function onKeyDown(e: KeyboardEvent): void {
   switch(e.key) {
     case 'Down':
     case 'ArrowDown':
-        game.onArrowPressed(SnakeDirection.SNAKE_DOWN);
+        game.onArrowPressed(Direction.DOWN);
         break;
     case 'Up':
     case 'ArrowUp':
-        game.onArrowPressed(SnakeDirection.SNAKE_UP);
+        game.onArrowPressed(Direction.UP);
         break;
     case 'Left':
     case 'ArrowLeft':
-        game.onArrowPressed(SnakeDirection.SNAKE_LEFT);
+        game.onArrowPressed(Direction.LEFT);
         break;
     case 'Right':
     case 'ArrowRight':
-        game.onArrowPressed(SnakeDirection.SNAKE_RIGHT);
+        game.onArrowPressed(Direction.RIGHT);
         break;
   }
   game.draw()

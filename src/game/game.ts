@@ -1,7 +1,8 @@
 import { type CellEnum, type CellType, cellIsSnake } from "./cell"
+import { type Direction } from "./direction"
 import { SnakesField } from "./field"
 import { type DrawingOutput } from "./output"
-import { type Snake, type SnakeDirection } from "./snake"
+import { type Snake } from "./snake"
 import { SnakesRegistry } from "./snakesRegistry"
 
 export class SnakesGame {
@@ -36,11 +37,11 @@ export class SnakesGame {
     return this._field.getCell(x, y)
   }
 
-  createPlayerSnake(x: number, y: number, direction: SnakeDirection): void {
+  createPlayerSnake(x: number, y: number, direction: Direction): void {
     this._playerSnake = this._snakesRegistry.createSnake(x, y, direction)
   }
 
-  onArrowPressed(direction: SnakeDirection): void {
+  onArrowPressed(direction: Direction): void {
     if ((this._playerSnake?.changeDirection(direction)) ?? false) {
       this.doPlayerStep()
     }

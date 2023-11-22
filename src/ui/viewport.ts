@@ -1,6 +1,6 @@
 import { CellEnum } from "../game/cell"
+import { Direction } from "../game/direction"
 import { type SnakeStyle, type DrawingOutput } from "../game/output"
-import { SnakeDirection } from "../game/snake"
 import { type DrawingSnakeStyle, type FieldTheme, type FillStyle } from "./theme"
 
 export const defaultTheme: FieldTheme = {
@@ -83,8 +83,8 @@ export class Viewport implements DrawingOutput {
     x: number,
     y: number,
     cellNumber: number,
-    direction: SnakeDirection,
-    nextDirection?: SnakeDirection,
+    direction: Direction,
+    nextDirection?: Direction,
   ): void {
     const snakeStyle: DrawingSnakeStyle = style as DrawingSnakeStyle ?? defaultSnakeStyle
     const w = this.width / this.gameWidth;
@@ -97,28 +97,28 @@ export class Viewport implements DrawingOutput {
     this.ctx.fillStyle = color ?? snakeStyle.color
 
     switch (direction) {
-      case SnakeDirection.SNAKE_LEFT:
+      case Direction.LEFT:
           this.ctx.beginPath();
           this.ctx.moveTo(screenX, screenY + h / 2);
           this.ctx.lineTo(screenX + w, screenY);
           this.ctx.lineTo(screenX + w, screenY + h);
           this.ctx.fill();
           break;
-      case SnakeDirection.SNAKE_RIGHT:
+      case Direction.RIGHT:
           this.ctx.beginPath();
           this.ctx.moveTo(screenX, screenY);
           this.ctx.lineTo(screenX + w, screenY + h / 2);
           this.ctx.lineTo(screenX, screenY + h);
           this.ctx.fill();
           break;
-      case SnakeDirection.SNAKE_UP:
+      case Direction.UP:
           this.ctx.beginPath();
           this.ctx.moveTo(screenX, screenY + h);
           this.ctx.lineTo(screenX + w / 2, screenY);
           this.ctx.lineTo(screenX + w, screenY + h);
           this.ctx.fill();
           break;
-      case SnakeDirection.SNAKE_DOWN:
+      case Direction.DOWN:
           this.ctx.beginPath();
           this.ctx.moveTo(screenX, screenY);
           this.ctx.lineTo(screenX + w, screenY);

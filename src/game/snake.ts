@@ -1,50 +1,6 @@
 import { CellEnum, cellIsSnake } from "./cell"
+import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "./direction"
 import { type SnakesField } from "./field"
-
-export enum SnakeDirection {
-  SNAKE_UP,
-  SNAKE_RIGHT,
-  SNAKE_DOWN,
-  SNAKE_LEFT,
-}
-
-export const oppositeDirectionOf = (
-  direction: SnakeDirection | undefined,
-): SnakeDirection | undefined => {
-  switch (direction) {
-    case SnakeDirection.SNAKE_UP:
-      return SnakeDirection.SNAKE_DOWN
-    case SnakeDirection.SNAKE_RIGHT:
-      return SnakeDirection.SNAKE_LEFT
-    case SnakeDirection.SNAKE_DOWN:
-      return SnakeDirection.SNAKE_UP
-    case SnakeDirection.SNAKE_LEFT:
-      return SnakeDirection.SNAKE_RIGHT
-  }
-  return undefined
-}
-
-export const directionOffsetByX = (direction: SnakeDirection): number => {
-  switch (direction) {
-    case SnakeDirection.SNAKE_RIGHT:
-      return 1
-    case SnakeDirection.SNAKE_LEFT:
-      return -1
-    default:
-      return 0
-  }
-}
-
-export const directionOffsetByY = (direction: SnakeDirection): number => {
-  switch (direction) {
-    case SnakeDirection.SNAKE_UP:
-      return -1
-    case SnakeDirection.SNAKE_DOWN:
-      return 1
-    default:
-      return 0
-  }
-}
 
 export enum SnakeStatus {
   NEW,
@@ -63,12 +19,12 @@ export class Snake {
   _length: number
   _status: SnakeStatus
 
-  _direction: SnakeDirection
+  _direction: Direction
   readonly UP: SnakeCell
   readonly RIGHT: SnakeCell
   readonly DOWN: SnakeCell
   readonly LEFT: SnakeCell
-  constructor(field: SnakesField, headX: number, headY: number, direction: SnakeDirection) {
+  constructor(field: SnakesField, headX: number, headY: number, direction: Direction) {
     if (headX < 0 || headX >= field.width) {
       throw new Error("Creating snake: headX is out of field dimention")
     }
@@ -83,10 +39,10 @@ export class Snake {
     this._length = 1
     this._status = SnakeStatus.NEW
     this._direction = direction
-    this.UP = new SnakeCell(this, SnakeDirection.SNAKE_UP)
-    this.RIGHT = new SnakeCell(this, SnakeDirection.SNAKE_RIGHT)
-    this.DOWN = new SnakeCell(this, SnakeDirection.SNAKE_DOWN)
-    this.LEFT = new SnakeCell(this, SnakeDirection.SNAKE_LEFT)
+    this.UP = new SnakeCell(this, Direction.UP)
+    this.RIGHT = new SnakeCell(this, Direction.RIGHT)
+    this.DOWN = new SnakeCell(this, Direction.DOWN)
+    this.LEFT = new SnakeCell(this, Direction.LEFT)
     this._refreshHeadCell()
   }
 
@@ -114,19 +70,19 @@ export class Snake {
     return this._tailY
   }
 
-  get direction(): SnakeDirection {
+  get direction(): Direction {
     return this._direction
   }
 
-  getSnakeCell(direction: SnakeDirection): SnakeCell {
+  getSnakeCell(direction: Direction): SnakeCell {
     switch (direction) {
-      case SnakeDirection.SNAKE_UP:
+      case Direction.UP:
         return this.UP
-      case SnakeDirection.SNAKE_RIGHT:
+      case Direction.RIGHT:
         return this.RIGHT
-      case SnakeDirection.SNAKE_DOWN:
+      case Direction.DOWN:
         return this.DOWN
-      case SnakeDirection.SNAKE_LEFT:
+      case Direction.LEFT:
         return this.LEFT
       default:
         throw new Error("Wrong direction!")
@@ -137,7 +93,7 @@ export class Snake {
     this.field.setCell(this._headX, this._headY, this.getSnakeCell(this._direction))
   }
 
-  changeDirection(direction: SnakeDirection): boolean {
+  changeDirection(direction: Direction): boolean {
     const cell = this.field.getCell(this._headX + directionOffsetByX(direction), this._headY + directionOffsetByY(direction))
     if (cellIsSnake(cell) && cell.snake === this && oppositeDirectionOf(direction) === cell.direction) {
       return false
@@ -182,25 +138,25 @@ export class Snake {
 
   _moveHeadForward(): boolean {
     switch (this._direction) {
-      case SnakeDirection.SNAKE_UP:
+      case Direction.UP:
         if (this._headY === 0) {
           return false
         }
         this._headY--
         break
-      case SnakeDirection.SNAKE_RIGHT:
+      case Direction.RIGHT:
         if (this._headX === this.field.width - 1) {
           return false
         }
         this._headX++
         break
-      case SnakeDirection.SNAKE_DOWN:
+      case Direction.DOWN:
         if (this._headY === this.field.height - 1) {
           return false
         }
         this._headY++
         break
-      case SnakeDirection.SNAKE_LEFT:
+      case Direction.LEFT:
         if (this._headX === 0) {
           return false
         }
@@ -255,8 +211,8 @@ export class Snake {
 
 export class SnakeCell {
   readonly snake: Snake
-  readonly direction: SnakeDirection
-  constructor(snake: Snake, direction: SnakeDirection) {
+  readonly direction: Direction
+  constructor(snake: Snake, direction: Direction) {
     this.snake = snake
     this.direction = direction
   }

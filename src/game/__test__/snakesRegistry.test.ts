@@ -1,7 +1,8 @@
 import { describe, expect, test, beforeEach } from "@jest/globals"
 import { SnakesRegistry } from "../snakesRegistry"
 import { SnakesField } from "../field"
-import { Snake, SnakeDirection } from "../snake"
+import { Snake } from "../snake"
+import { Direction } from "../direction"
 
 describe("Snakes registry", () => {
   let field: SnakesField
@@ -18,13 +19,13 @@ describe("Snakes registry", () => {
   describe("When creating snakes", () => {
     test("should have size 1 when snake is created", () => {
       const snakes = new SnakesRegistry(field)
-      snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
+      snakes.createSnake(1, 1, Direction.UP)
       expect(snakes.count).toBe(1)
     })
 
     test("Just created snake should be in registry", () => {
       const snakes = new SnakesRegistry(field)
-      const snake = snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
+      const snake = snakes.createSnake(1, 1, Direction.UP)
       expect(snakes.contains(snake)).toBeTruthy()
     })
 
@@ -33,7 +34,7 @@ describe("Snakes registry", () => {
       const snakes = new SnakesRegistry(field)
       const createdSnakes: Snake[] = []
       for (let i = 0; i < SNAKE_COUNT; ++i) {
-        const snake = snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
+        const snake = snakes.createSnake(1, 1, Direction.UP)
         createdSnakes.push(snake)
       }
       expect(snakes.count).toBe(SNAKE_COUNT)
@@ -44,10 +45,10 @@ describe("Snakes registry", () => {
       const SNAKE_COUNT = 10
       const snakes = new SnakesRegistry(field)
       for (let i = 0; i < SNAKE_COUNT; ++i) {
-        snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
+        snakes.createSnake(1, 1, Direction.UP)
       }
 
-      const unknownSnake = new Snake(field, 1, 2, SnakeDirection.SNAKE_DOWN)
+      const unknownSnake = new Snake(field, 1, 2, Direction.DOWN)
       expect(snakes.contains(unknownSnake)).toBeFalsy()
     })
   })
@@ -61,13 +62,13 @@ describe("Snakes registry", () => {
       snakes = new SnakesRegistry(field)
       createdSnakes = []
       for (let i = 0; i < SNAKE_COUNT; ++i) {
-        const snake = snakes.createSnake(1, 1, SnakeDirection.SNAKE_UP)
+        const snake = snakes.createSnake(1, 1, Direction.UP)
         createdSnakes.push(snake)
       }
     })
 
     test("do nothing with registry when killing unknown snake", () => {
-      const unknownSnake = new Snake(field, 1, 2, SnakeDirection.SNAKE_DOWN)
+      const unknownSnake = new Snake(field, 1, 2, Direction.DOWN)
 
       snakes.killSnake(unknownSnake)
 
