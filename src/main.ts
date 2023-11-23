@@ -34,7 +34,7 @@ for (let i = 0; i < 10; ++i) {
   game.putCell(random(0, WIDTH), random(0, HEIGHT), CellEnum.POISON)
 }
 
-game.createPlayerSnake(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2), Direction.UP)
+const player = game.createPlayerSnake(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2), Direction.UP)
 
 game.draw()
 
@@ -45,19 +45,19 @@ function onKeyDown(e: KeyboardEvent): void {
   switch (e.key) {
     case "Down":
     case "ArrowDown":
-      game.onArrowPressed(Direction.DOWN)
+      player.onArrowPressed(Direction.DOWN)
       break
     case "Up":
     case "ArrowUp":
-      game.onArrowPressed(Direction.UP)
+      player.onArrowPressed(Direction.UP)
       break
     case "Left":
     case "ArrowLeft":
-      game.onArrowPressed(Direction.LEFT)
+      player.onArrowPressed(Direction.LEFT)
       break
     case "Right":
     case "ArrowRight":
-      game.onArrowPressed(Direction.RIGHT)
+      player.onArrowPressed(Direction.RIGHT)
       break
   }
   game.draw()

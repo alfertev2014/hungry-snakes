@@ -31,6 +31,22 @@ describe("Creating game", () => {
   })
 })
 
+describe("Creating snakes in game", () => {
+  test("should allow to create many snakes", () => {
+    const game = new SnakesGame(3, 3)
+    game.createSnake(0, 0, Direction.DOWN)
+    game.createSnake(1, 0, Direction.DOWN)
+    game.createSnake(0, 1, Direction.DOWN)
+    game.createSnake(1, 2, Direction.DOWN)
+
+    expect(game.snakesCount).toBe(4)
+
+    game.createPlayerSnake(2, 2, Direction.DOWN)
+
+    expect(game.snakesCount).toBe(5)
+  })
+})
+
 describe("Drawing game", () => {
   test("without output should do nothing", () => {
     const game = new SnakesGame(3, 3)
@@ -88,11 +104,11 @@ describe("Drawing game", () => {
         game.putCell(x, y, CellEnum.FOOD)
       }
     }
-    game.createPlayerSnake(2, 2, Direction.LEFT)
-    game.onArrowPressed(Direction.LEFT)
-    game.doPlayerStep()
-    game.onArrowPressed(Direction.UP)
-    game.onArrowPressed(Direction.RIGHT)
+    const player = game.createPlayerSnake(2, 2, Direction.LEFT)
+    player.onArrowPressed(Direction.LEFT)
+    player.doPlayerStep()
+    player.onArrowPressed(Direction.UP)
+    player.onArrowPressed(Direction.RIGHT)
 
     const output = {
       clearWithBackground: jest.fn(),
@@ -133,11 +149,11 @@ describe("Ticking game", () => {
   })
   test("should do player snake step to its direction", () => {
     const game = new SnakesGame(2, 2)
-    game.createPlayerSnake(0, 0, Direction.RIGHT)
+    const player = game.createPlayerSnake(0, 0, Direction.RIGHT)
 
     game.tick()
 
-    expect(game.getCell(1, 0)).toBe(game.playerSnake?.RIGHT)
-    expect(game.getCell(0, 0)).toBe(CellEnum.EMPTY)
+    expect(player.headX).toBe(1)
+    expect(player.headY).toBe(0)
   })
 })

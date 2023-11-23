@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from "@jest/globals"
 import { GameField } from "../field"
-import { Snake, SnakeStatus } from "../snake"
+import { Snake } from "../snake"
 import { DIRECTIONS } from "./const"
 import { CellEnum } from "../cell"
 import { Direction } from "../direction"
@@ -16,11 +16,6 @@ describe("Snakes", () => {
     test("should have length equal to 1", () => {
       const snake = new Snake(field, 1, 1, Direction.UP)
       expect(snake.length).toBe(1)
-    })
-
-    test("should have status NEW", () => {
-      const snake = new Snake(field, 1, 1, Direction.UP)
-      expect(snake.status).toBe(SnakeStatus.NEW)
     })
 
     test("should have head and tail cell at the same coords", () => {
@@ -180,13 +175,13 @@ describe("Snakes", () => {
 
       snake.doHeadStep()
       expect(snake.length).toBe(0)
-      expect(snake.status).toBe(SnakeStatus.DIED)
       expect(snake.headX).toBe(snake.tailX)
       expect(snake.headY).toBe(snake.tailY)
       expect(snake.headX).toBe(1)
       expect(snake.headY).toBe(1)
     })
     test("should not be allowed right thru the snake cell", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
       const snake1 = new Snake(field, 1, 1, Direction.LEFT)
       const snake2 = new Snake(field, 1, 2, Direction.UP)
       expect(() => {
@@ -250,6 +245,18 @@ describe("Snakes", () => {
       expect(snake.direction).toBe(Direction.DOWN)
       expect(field.getCell(snake.headX, snake.headY)).toBe(snake.DOWN)
     })
+    test("should do nothing if snake is dead", () => {
+      const snake = new Snake(field, 0, 1, Direction.RIGHT)
+      snake.doTailStep()
+      expect(snake.length).toBe(0)
+
+      snake.doHeadStep()
+      expect(snake.length).toBe(0)
+      expect(snake.headX).toBe(snake.tailX)
+      expect(snake.headY).toBe(snake.tailY)
+      expect(snake.headX).toBe(0)
+      expect(snake.headY).toBe(1)
+    })
   })
   describe("Doing tail step", () => {
     test("when length == 2 should decrement length", () => {
@@ -274,7 +281,6 @@ describe("Snakes", () => {
       const snake = new Snake(field, 0, 1, Direction.RIGHT)
       snake.doTailStep()
       expect(snake.length).toBe(0)
-      expect(snake.status).toBe(SnakeStatus.DIED)
     })
     test("tail should be moved to tail cell direction", () => {
       const snake = new Snake(field, 0, 1, Direction.RIGHT)
@@ -313,11 +319,9 @@ describe("Snakes", () => {
       const snake = new Snake(field, 0, 1, Direction.RIGHT)
       snake.doTailStep()
       expect(snake.length).toBe(0)
-      expect(snake.status).toBe(SnakeStatus.DIED)
 
       snake.doTailStep()
       expect(snake.length).toBe(0)
-      expect(snake.status).toBe(SnakeStatus.DIED)
       expect(snake.headX).toBe(snake.tailX)
       expect(snake.headY).toBe(snake.tailY)
       expect(snake.headX).toBe(0)
@@ -346,7 +350,7 @@ describe("Snake doing step", () => {
   let field: GameField
   let snake: Snake
 
-  describe("whed field is empty", () => {
+  describe("when field is empty", () => {
     beforeEach(() => {
       field = new GameField(3, 3)
       snake = new Snake(field, 0, 1, Direction.RIGHT)
@@ -432,6 +436,91 @@ describe("Snake doing step", () => {
     })
   })
 
+  describe("when cutting snake", () => {
+    beforeEach(() => {
+      field = new GameField(3, 3)
+    })
+    test("the tail should become food", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.LEFT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.UP)
+      expect(snake.length).toBe(6)
+
+      snake.cut(2, 0)
+      expect(snake.headX).toBe(0)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(2)
+      expect(snake.tailY).toBe(1)
+      expect(snake.length).toBe(3)
+      expect(field.getCell(0, 0)).toBe(CellEnum.FOOD)
+      expect(field.getCell(1, 0)).toBe(CellEnum.FOOD)
+    })
+    test("should do dothing if cutting on nonsnake cell", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.LEFT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.UP)
+      expect(snake.length).toBe(6)
+
+      snake.cut(2, 2)
+      expect(snake.length).toBe(6)
+      expect(snake.headX).toBe(0)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(0)
+      expect(snake.tailY).toBe(0)
+      expect(snake.length).toBe(6)
+    })
+    test("should do dothing if cutting on other snake cell", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.LEFT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.UP)
+      expect(snake.length).toBe(6)
+
+      const otherSnake = new Snake(field, 2, 2, Direction.LEFT)
+      otherSnake.doHeadStep()
+
+      snake.cut(2, 2)
+      expect(snake.length).toBe(6)
+      expect(snake.headX).toBe(0)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(0)
+      expect(snake.tailY).toBe(0)
+      expect(snake.length).toBe(6)
+    })
+    test("should kill snake when cutting its head", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      expect(snake.length).toBe(4)
+
+      snake.cut(snake.headX, snake.headY)
+      expect(snake.length).toBe(0)
+    })
+  })
+
   describe("when snake bite itself", () => {
     beforeEach(() => {
       field = new GameField(3, 3)
@@ -456,26 +545,6 @@ describe("Snake doing step", () => {
       expect(snake.tailX).toBe(1)
       expect(snake.tailY).toBe(0)
     })
-    test("when cutting snake the tail should become food", () => {
-      const snake = new Snake(field, 0, 0, Direction.RIGHT)
-      snake.changeDirection(Direction.RIGHT)
-      snake.doHeadStep()
-      snake.doHeadStep()
-      snake.changeDirection(Direction.DOWN)
-      snake.doHeadStep()
-      snake.changeDirection(Direction.LEFT)
-      snake.doHeadStep()
-      snake.doHeadStep()
-      snake.changeDirection(Direction.UP)
-      expect(snake.length).toBe(6)
-
-      snake.cut(1, 0)
-      expect(snake.headX).toBe(0)
-      expect(snake.headY).toBe(1)
-      expect(snake.tailX).toBe(2)
-      expect(snake.tailY).toBe(0)
-      expect(snake.length).toBe(4)
-    })
     test("when bite to body should cut itself and tail should become food", () => {
       const snake = new Snake(field, 0, 0, Direction.RIGHT)
       snake.changeDirection(Direction.RIGHT)
@@ -495,6 +564,62 @@ describe("Snake doing step", () => {
       expect(snake.tailY).toBe(0)
       expect(field.getCell(0, 0)).toBe(CellEnum.FOOD)
       expect(snake.length).toBe(4)
+    })
+  })
+  describe("when bite other snake", () => {
+    beforeEach(() => {
+      field = new GameField(4, 3)
+    })
+    test("should cut snake and tail should become food", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      expect(snake.length).toBe(5)
+
+      const bittingSnake = new Snake(field, 2, 1, Direction.UP)
+
+      bittingSnake.doStep()
+      expect(snake.length).toBe(2)
+      expect(bittingSnake.length).toBe(2)
+
+      expect(snake.headX).toBe(3)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(3)
+      expect(snake.tailY).toBe(0)
+      expect(field.getCell(0, 0)).toBe(CellEnum.FOOD)
+      expect(field.getCell(1, 0)).toBe(CellEnum.FOOD)
+      expect(bittingSnake.headX).toBe(2)
+      expect(bittingSnake.headY).toBe(0)
+      expect(bittingSnake.tailX).toBe(2)
+      expect(bittingSnake.tailY).toBe(1)
+    })
+    test("should do nothing if bitting snake is dead", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      expect(snake.length).toBe(5)
+
+      const bittingSnake = new Snake(field, 2, 1, Direction.UP)
+      bittingSnake.doTailStep()
+      expect(bittingSnake.length).toBe(0)
+      expect(snake.length).toBe(5)
+
+      bittingSnake.doStep()
+
+      expect(snake.headX).toBe(3)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(0)
+      expect(snake.tailY).toBe(0)
+      expect(field.getCell(0, 0)).toBe(snake.RIGHT)
+      expect(field.getCell(1, 0)).toBe(snake.RIGHT)
     })
   })
 })

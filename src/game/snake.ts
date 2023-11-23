@@ -2,11 +2,6 @@ import { CellEnum, type CellType, cellIsSnake } from "./cell"
 import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "./direction"
 import { type GameField } from "./field"
 
-export enum SnakeStatus {
-  NEW,
-  DIED,
-}
-
 export class Snake {
   readonly field: GameField
 
@@ -17,7 +12,6 @@ export class Snake {
   _tailY: number
 
   _length: number
-  _status: SnakeStatus
 
   _direction: Direction
   readonly UP: SnakeCell
@@ -40,7 +34,6 @@ export class Snake {
     this._tailX = headX
     this._tailY = headY
     this._length = 1
-    this._status = SnakeStatus.NEW
     this._direction = direction
     this.UP = new SnakeCell(this, Direction.UP)
     this.RIGHT = new SnakeCell(this, Direction.RIGHT)
@@ -53,8 +46,8 @@ export class Snake {
     return this._length
   }
 
-  get status(): SnakeStatus {
-    return this._status
+  get isDead(): boolean {
+    return this._length <= 0
   }
 
   get headX(): number {
@@ -130,12 +123,12 @@ export class Snake {
         this.doTailStep()
         break
       default:
-        this.doBite(nextCell.snake)
+        this._bite(nextCell.snake)
     }
   }
 
   _doHeadStep(): void {
-    if (this._length <= 0 || this._status === SnakeStatus.DIED) {
+    if (this.isDead) {
       return
     }
     this._headX += directionOffsetByX(this._direction)
@@ -155,7 +148,7 @@ export class Snake {
   }
 
   _doTailStep(dropCell: CellEnum): void {
-    if (this._length <= 0 || this._status === SnakeStatus.DIED) {
+    if (this.isDead) {
       return
     }
     const tailCell = this.field.getCell(this._tailX, this._tailY)
@@ -164,9 +157,7 @@ export class Snake {
     }
     this.field.setCell(this._tailX, this._tailY, dropCell)
     this._length--
-    if (this._length <= 0) {
-      this._status = SnakeStatus.DIED
-    } else {
+    if (this._length > 0) {
       this._tailX += directionOffsetByX(tailCell.direction)
       this._tailY += directionOffsetByY(tailCell.direction)
     }
@@ -181,17 +172,21 @@ export class Snake {
   }
 
   cut(x: number, y: number): void {
-    while (this._tailX !== x || this._tailY !== y) {
+    const cutCell = this.field.getCell(x, y)
+    if (cellIsSnake(cutCell) && cutCell.snake === this) {
+      while (this._tailX !== x || this._tailY !== y) {
+        this.dropFood()
+      }
       this.dropFood()
     }
-    this.dropFood()
   }
 
-  doBite(snake: Snake | undefined): void {
-    if (snake != null) {
-      snake.cut(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
-      this._doHeadStep()
+  _bite(snake: Snake): void {
+    if (this.isDead) {
+      return
     }
+    snake.cut(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
+    this._doHeadStep()
   }
 }
 
