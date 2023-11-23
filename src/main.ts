@@ -5,36 +5,62 @@ import "./style.css"
 
 import { Viewport } from "./ui/viewport"
 
-const canvas = document.getElementById("canvas")
+const canvas = document.getElementById("canvas") as (HTMLCanvasElement | null)
 if (canvas == null) {
   throw new Error("Canvas element is not found")
 }
 
-const WIDTH = 100
-const HEIGHT = 80
+const GAME_WIDTH = 120
+const GAME_HEIGHT = 90
 
-const viewport = new Viewport(canvas as HTMLCanvasElement, WIDTH, HEIGHT)
+const viewport = new Viewport(canvas, GAME_WIDTH, GAME_HEIGHT)
 
 function random(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min) + min)
 }
 
-const game = new SnakesGame(WIDTH, HEIGHT)
+const game = new SnakesGame(GAME_WIDTH, GAME_HEIGHT)
 game.output = viewport
 
+const VIEWPORT_RATIO = GAME_WIDTH / GAME_HEIGHT
+
+const observer = new ResizeObserver((entries) => {
+  for (const entry of entries) {
+    const { width, height } = entry.contentRect
+    if (width === 0 || height === 0) {
+      return
+    }
+
+    if (width / height < VIEWPORT_RATIO) {
+      canvas.width = width;
+      canvas.height = width / VIEWPORT_RATIO;
+    } else {
+      canvas.width = height * VIEWPORT_RATIO;
+      canvas.height = height;
+    }
+  }
+  game.draw()
+});
+
+const canvasContaier = document.getElementById("canvas-container")
+if (canvasContaier === null) {
+  throw new Error("Canvas container element is not found")
+}
+observer.observe(canvasContaier)
+
 for (let i = 0; i < 200; ++i) {
-  game.putCell(random(0, WIDTH), random(0, HEIGHT), CellEnum.FOOD)
+  game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.FOOD)
 }
 
 for (let i = 0; i < 30; ++i) {
-  game.putCell(random(0, WIDTH), random(0, HEIGHT), CellEnum.BRICK)
+  game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.BRICK)
 }
 
 for (let i = 0; i < 10; ++i) {
-  game.putCell(random(0, WIDTH), random(0, HEIGHT), CellEnum.POISON)
+  game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.POISON)
 }
 
-const player = game.createPlayerSnake(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2), Direction.UP)
+const player = game.createPlayerSnake(Math.floor(GAME_WIDTH / 2), Math.floor(GAME_HEIGHT / 2), Direction.UP)
 
 game.draw()
 
