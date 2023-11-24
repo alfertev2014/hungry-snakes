@@ -1,6 +1,20 @@
+import { CellEnum } from "./game/cell"
 import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "./game/direction"
 import { type SnakeControl } from "./game/snakesRegistry"
 import { random } from "./util"
+
+const randomDirection = (): Direction => {
+  switch (random(0, 100) % 4) {
+    case 0:
+      return Direction.UP
+    case 1:
+      return Direction.RIGHT
+    case 2:
+      return Direction.DOWN
+    case 3:
+      return Direction.LEFT
+  }
+}
 
 export class SimpleRandomBot {
   readonly snakeControl: SnakeControl
@@ -13,29 +27,10 @@ export class SimpleRandomBot {
       return
     }
 
-    let nextDirection: Direction = this.snakeControl.direction
-    switch (random(1, 5)) {
-      case 1:
-        nextDirection = Direction.UP
-        break
-      case 2:
-        nextDirection = Direction.RIGHT
-        break
-      case 3:
-        nextDirection = Direction.DOWN
-        break
-      case 4:
-        nextDirection = Direction.LEFT
-        break
-    }
+    let nextDirection: Direction = randomDirection()
+    const { headX, headY, tailX, tailY } = this.snakeControl
 
-    const { headX, headY, tailX, tailY, direction } = this.snakeControl
-
-    for (let i = 0; i < 2; ++i) {
-      if (nextDirection === oppositeDirectionOf(direction)) {
-        nextDirection = direction
-      }
-
+    for (let i = 0; i < 3; ++i) {
       const nextX = headX + directionOffsetByX(nextDirection)
       const nextY = headY + directionOffsetByY(nextDirection)
       const nextCell = this.snakeControl.getCell(nextX, nextY)
@@ -46,6 +41,9 @@ export class SimpleRandomBot {
         } else {
           nextDirection = oppositeDirectionOf(nextCell.direction)
         }
+      } else if (nextCell === CellEnum.BOUNDARY || nextCell === CellEnum.BRICK) {
+        nextDirection = randomDirection()
+        break
       } else {
         break
       }

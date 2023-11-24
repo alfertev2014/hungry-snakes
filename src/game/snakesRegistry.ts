@@ -56,9 +56,7 @@ class SnakeControlImpl implements SnakeControl {
   }
 
   onArrowPressed(direction: Direction): void {
-    if (this._snake?.changeDirection(direction) ?? false) {
-      this.doPlayerStep()
-    }
+    this._snake.changeDirection(direction)
   }
 
   doPlayerStep(): void {

@@ -86,18 +86,22 @@ function onKeyDown(e: KeyboardEvent): void {
     case "Down":
     case "ArrowDown":
       player.onArrowPressed(Direction.DOWN)
+      player.doPlayerStep()
       break
     case "Up":
     case "ArrowUp":
       player.onArrowPressed(Direction.UP)
+      player.doPlayerStep()
       break
     case "Left":
     case "ArrowLeft":
       player.onArrowPressed(Direction.LEFT)
+      player.doPlayerStep()
       break
     case "Right":
     case "ArrowRight":
       player.onArrowPressed(Direction.RIGHT)
+      player.doPlayerStep()
       break
   }
   game.draw()

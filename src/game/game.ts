@@ -54,7 +54,7 @@ export class SnakesGame {
   }
 
   tick(): void {
-    this._playerSnake?.doPlayerStep()
+    this._snakesRegistry.tick()
   }
 
   draw(): void {
