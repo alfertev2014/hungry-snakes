@@ -1,11 +1,13 @@
-import { CellEnum } from "./game/cell"
+import { SimpleRandomBot } from "./bot"
+import { CellEnum, cellIsSnake } from "./game/cell"
 import { Direction } from "./game/direction"
 import { SnakesGame } from "./game/game"
 import "./style.css"
 
 import { Viewport } from "./ui/viewport"
+import { random } from "./util"
 
-const canvas = document.getElementById("canvas") as (HTMLCanvasElement | null)
+const canvas = document.getElementById("canvas") as HTMLCanvasElement | null
 if (canvas == null) {
   throw new Error("Canvas element is not found")
 }
@@ -14,10 +16,6 @@ const GAME_WIDTH = 120
 const GAME_HEIGHT = 90
 
 const viewport = new Viewport(canvas, GAME_WIDTH, GAME_HEIGHT)
-
-function random(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min) + min)
-}
 
 const game = new SnakesGame(GAME_WIDTH, GAME_HEIGHT)
 game.output = viewport
@@ -32,15 +30,15 @@ const observer = new ResizeObserver((entries) => {
     }
 
     if (width / height < VIEWPORT_RATIO) {
-      canvas.width = width;
-      canvas.height = width / VIEWPORT_RATIO;
+      canvas.width = width
+      canvas.height = width / VIEWPORT_RATIO
     } else {
-      canvas.width = height * VIEWPORT_RATIO;
-      canvas.height = height;
+      canvas.width = height * VIEWPORT_RATIO
+      canvas.height = height
     }
   }
   game.draw()
-});
+})
 
 const canvasContaier = document.getElementById("canvas-container")
 if (canvasContaier === null) {
@@ -48,7 +46,7 @@ if (canvasContaier === null) {
 }
 observer.observe(canvasContaier)
 
-for (let i = 0; i < 200; ++i) {
+for (let i = 0; i < 2000; ++i) {
   game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.FOOD)
 }
 
@@ -62,11 +60,23 @@ for (let i = 0; i < 10; ++i) {
 
 const player = game.createPlayerSnake(Math.floor(GAME_WIDTH / 2), Math.floor(GAME_HEIGHT / 2), Direction.UP)
 
+const bots: SimpleRandomBot[] = []
+for (let i = 0; i < 20; ++i) {
+  const x = random(0, GAME_WIDTH)
+  const y = random(0, GAME_HEIGHT)
+  if (!cellIsSnake(game.getCell(x, y))) {
+    const control = game.createSnake(x, y, Direction.UP)
+    bots.push(new SimpleRandomBot(control))
+  }
+}
+
 setInterval(() => {
+  for (const bot of bots) {
+    bot.doNextAction()
+  }
   game.tick()
   game.draw()
-}, 400)
-
+}, 200)
 
 function onKeyDown(e: KeyboardEvent): void {
   if (e.isComposing || e.keyCode === 229) {

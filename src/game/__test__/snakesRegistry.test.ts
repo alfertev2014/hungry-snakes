@@ -79,9 +79,9 @@ describe("Snakes registry", () => {
       snake1.doPlayerStep()
       expect(snake1.headX).toBe(0)
       expect(snake1.headY).toBe(1)
-      
+
       snakes.tick()
-      
+
       expect(snake2.length).toBe(0)
 
       expect(snake2.headX).toBe(0)

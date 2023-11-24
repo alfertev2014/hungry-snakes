@@ -1,8 +1,8 @@
-import { cellIsSnake } from "./cell"
+import { type CellType, cellIsSnake } from "./cell"
 import { Direction } from "./direction"
 import { type GameField } from "./field"
 import { type DrawingOutput } from "./output"
-import { Snake } from "./snake"
+import { Snake, type SnakeCell } from "./snake"
 
 export interface SnakeControl {
   onArrowPressed: (direction: Direction) => void
@@ -13,6 +13,8 @@ export interface SnakeControl {
   get tailY(): number
   get length(): number
   get direction(): Direction
+  getCell: (x: number, y: number) => CellType
+  isSelfSnake: (cell: CellType) => cell is SnakeCell
 }
 
 class SnakeControlImpl implements SnakeControl {
@@ -24,7 +26,7 @@ class SnakeControlImpl implements SnakeControl {
   get headX(): number {
     return this._snake.headX
   }
-  
+
   get headY(): number {
     return this._snake.headY
   }
@@ -32,7 +34,7 @@ class SnakeControlImpl implements SnakeControl {
   get tailX(): number {
     return this._snake.tailX
   }
-  
+
   get tailY(): number {
     return this._snake.tailY
   }
@@ -43,6 +45,14 @@ class SnakeControlImpl implements SnakeControl {
 
   get direction(): Direction {
     return this._snake.direction
+  }
+
+  getCell(x: number, y: number): CellType {
+    return this._snake.field.getCell(x, y)
+  }
+
+  isSelfSnake(cell: CellType): cell is SnakeCell {
+    return cellIsSnake(cell) && this._snake === cell.snake
   }
 
   onArrowPressed(direction: Direction): void {
