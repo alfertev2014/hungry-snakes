@@ -62,7 +62,11 @@ for (let i = 0; i < 10; ++i) {
 
 const player = game.createPlayerSnake(Math.floor(GAME_WIDTH / 2), Math.floor(GAME_HEIGHT / 2), Direction.UP)
 
-game.draw()
+setInterval(() => {
+  game.tick()
+  game.draw()
+}, 400)
+
 
 function onKeyDown(e: KeyboardEvent): void {
   if (e.isComposing || e.keyCode === 229) {
