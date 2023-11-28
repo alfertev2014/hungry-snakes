@@ -21,9 +21,9 @@ export interface SnakeControl {
 class SnakeControlImpl implements SnakeControl {
   readonly _snake: Snake
   style: SnakeStyle | null
-  constructor(snake: Snake) {
+  constructor(snake: Snake, style: SnakeStyle | null = null) {
     this._snake = snake
-    this.style = null
+    this.style = style
   }
 
   get headX(): number {
@@ -79,9 +79,9 @@ export class SnakesRegistry {
     return this._snakes.length
   }
 
-  createSnake(x: number, y: number, direction: Direction): SnakeControl {
+  createSnake(x: number, y: number, direction: Direction, style: SnakeStyle | null = null): SnakeControl {
     const snake = new Snake(this._field, x, y, direction)
-    const control = new SnakeControlImpl(snake)
+    const control = new SnakeControlImpl(snake, style)
     this._snakes.push(control)
     return control
   }

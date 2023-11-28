@@ -1,4 +1,5 @@
 import { type SnakesGame } from "../game/game"
+import { type FieldTheme } from "./theme"
 import { Viewport } from "./viewport"
 
 const CANVAS_ID = "canvas"
@@ -7,7 +8,7 @@ const CANVAS_CONTAINER_ID = "canvas-container"
 export class CanvasContainer {
   _canvas: HTMLCanvasElement
   readonly viewport: Viewport
-  constructor(game: SnakesGame) {
+  constructor(game: SnakesGame, theme?: FieldTheme) {
     const { width: gameWidth, height: gameHeight } = game
     const canvas = document.getElementById(CANVAS_ID) as (HTMLCanvasElement | null)
     if (canvas == null) {
@@ -15,7 +16,7 @@ export class CanvasContainer {
     }
     this._canvas = canvas
 
-    this.viewport = new Viewport(canvas, gameWidth, gameHeight)
+    this.viewport = new Viewport(canvas, gameWidth, gameHeight, theme)
 
     const viewportRatio = gameWidth / gameHeight
 

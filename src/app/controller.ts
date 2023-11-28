@@ -3,8 +3,25 @@ import { CellEnum, cellIsSnake } from "../game/cell"
 import { Direction } from "../game/direction"
 import { SnakesGame } from "../game/game"
 import { CanvasContainer } from "../ui/canvas"
-import { random } from "../util"
+import { type FieldTheme, type DrawingSnakeStyle } from "../ui/theme"
+import { cssHSLA, random } from "../util"
 import { BRICKS_COUNT, FOOD_COUNT, GAME_HEIGHT, GAME_WIDTH, POISON_COUNT } from "./config"
+
+const randomSnakeStyle = (): DrawingSnakeStyle => {
+  const h = random(0, 360)
+  const headH = h + 60
+  return {
+    color: cssHSLA(h, 100, 40),
+    headColor: cssHSLA(headH, 100, 50),
+  }
+}
+
+const fieldTheme: FieldTheme = {
+  background: "black",
+  food: cssHSLA(0, 0, 30),
+  brick: cssHSLA(0, 60, 40),
+  poison: cssHSLA(300, 100, 10)
+}
 
 export class GameController {
   readonly game: SnakesGame
@@ -12,7 +29,7 @@ export class GameController {
   readonly bots: SimpleRandomBot[]
   constructor() {
     this.game = new SnakesGame(GAME_WIDTH, GAME_HEIGHT)
-    this.canvasContainer = new CanvasContainer(this.game)
+    this.canvasContainer = new CanvasContainer(this.game, fieldTheme)
     this.bots = []
   }
 
@@ -70,7 +87,7 @@ export class GameController {
       const x = random(0, GAME_WIDTH)
       const y = random(0, GAME_HEIGHT)
       if (!cellIsSnake(this.game.getCell(x, y))) {
-        const control = this.game.createSnake(x, y, Direction.UP)
+        const control = this.game.createSnake(x, y, Direction.UP, randomSnakeStyle())
         this.bots.push(new SimpleRandomBot(control))
       }
     }

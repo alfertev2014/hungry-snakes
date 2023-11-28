@@ -1,7 +1,7 @@
 import { type CellEnum, type CellType, cellIsSnake } from "./cell"
 import { type Direction } from "./direction"
 import { GameField } from "./field"
-import { type DrawingOutput } from "./output"
+import { type SnakeStyle, type DrawingOutput } from "./output"
 import { type SnakeControl, SnakesRegistry } from "./snakesRegistry"
 
 export class SnakesGame {
@@ -40,12 +40,12 @@ export class SnakesGame {
     return this._field.getCell(x, y)
   }
 
-  createSnake(x: number, y: number, direction: Direction): SnakeControl {
-    return this._snakesRegistry.createSnake(x, y, direction)
+  createSnake(x: number, y: number, direction: Direction, style: SnakeStyle | null = null): SnakeControl {
+    return this._snakesRegistry.createSnake(x, y, direction, style)
   }
 
-  createPlayerSnake(x: number, y: number, direction: Direction): SnakeControl {
-    this._playerSnake = this._snakesRegistry.createSnake(x, y, direction)
+  createPlayerSnake(x: number, y: number, direction: Direction, style: SnakeStyle | null = null): SnakeControl {
+    this._playerSnake = this._snakesRegistry.createSnake(x, y, direction, style)
     return this._playerSnake
   }
 
