@@ -1,7 +1,7 @@
-import { CellEnum } from "./game/cell"
-import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "./game/direction"
-import { type SnakeControl } from "./game/snakesRegistry"
-import { random } from "./util"
+import { CellEnum } from "../game/cell"
+import { Direction, directionOffsetByX, directionOffsetByY, oppositeDirectionOf } from "../game/direction"
+import { type SnakeControl } from "../game/snakesRegistry"
+import { random } from "../util"
 
 const randomDirection = (): Direction => {
   switch (random(0, 100) % 4) {
@@ -13,6 +13,8 @@ const randomDirection = (): Direction => {
       return Direction.DOWN
     case 3:
       return Direction.LEFT
+    default:
+      return Direction.UP
   }
 }
 

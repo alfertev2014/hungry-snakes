@@ -94,6 +94,9 @@ export class Snake {
   }
 
   changeDirection(direction: Direction): boolean {
+    if (this.isDead) {
+      return false
+    }
     const cell = this.nextHeadCell(direction)
     if (cellIsSnake(cell) && cell.snake === this && oppositeDirectionOf(direction) === cell.direction) {
       return false
@@ -104,6 +107,9 @@ export class Snake {
   }
 
   doStep(): void {
+    if (this.isDead) {
+      return
+    }
     const nextCell = this.nextHeadCell(this._direction)
     switch (nextCell) {
       case CellEnum.EMPTY:
