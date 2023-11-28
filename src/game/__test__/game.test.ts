@@ -107,8 +107,11 @@ describe("Drawing game", () => {
     const player = game.createPlayerSnake(2, 2, Direction.LEFT)
     player.onArrowPressed(Direction.LEFT)
     player.doPlayerStep()
+    player.doPlayerStep()
     player.onArrowPressed(Direction.UP)
+    player.doPlayerStep()
     player.onArrowPressed(Direction.RIGHT)
+    player.doPlayerStep()
 
     const output = {
       clearWithBackground: jest.fn(),

@@ -1,7 +1,7 @@
 import { type CellType, cellIsSnake } from "./cell"
 import { Direction } from "./direction"
 import { type GameField } from "./field"
-import { type DrawingOutput } from "./output"
+import { type SnakeStyle, type DrawingOutput } from "./output"
 import { Snake, type SnakeCell } from "./snake"
 
 export interface SnakeControl {
@@ -15,12 +15,15 @@ export interface SnakeControl {
   get direction(): Direction
   getCell: (x: number, y: number) => CellType
   isSelfSnake: (cell: CellType) => cell is SnakeCell
+  style: SnakeStyle | null
 }
 
 class SnakeControlImpl implements SnakeControl {
   readonly _snake: Snake
+  style: SnakeStyle | null
   constructor(snake: Snake) {
     this._snake = snake
+    this.style = null
   }
 
   get headX(): number {
@@ -116,7 +119,7 @@ export class SnakesRegistry {
           if (!cellIsSnake(cell)) {
             throw new Error("Snake is corrupted!!!")
           }
-          output.drawSnakeCell(null, x, y, cellNumber, cell.direction, nextDirection)
+          output.drawSnakeCell(control.style, x, y, cellNumber, cell.direction, nextDirection)
           nextDirection = cell.direction
           cellNumber--
           switch (nextDirection) {
