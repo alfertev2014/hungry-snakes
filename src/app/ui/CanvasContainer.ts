@@ -1,6 +1,6 @@
-import { type SnakesGame } from "../game/game"
-import { type FieldTheme } from "./theme"
-import { Viewport } from "./viewport"
+import { type SnakesGame } from "../../game/game"
+import { type FieldTheme } from "../../graphics/theme"
+import { Viewport } from "../../graphics/viewport"
 
 const CANVAS_ID = "canvas"
 const CANVAS_CONTAINER_ID = "canvas-container"
