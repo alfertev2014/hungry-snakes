@@ -5,7 +5,7 @@ import { SnakesGame } from "../game/game"
 import { CanvasContainer } from "./ui/CanvasContainer"
 import { type FieldTheme, type DrawingSnakeStyle } from "../graphics/theme"
 import { cssHSLA, random } from "../util"
-import { BRICKS_COUNT, FOOD_COUNT, GAME_HEIGHT, GAME_WIDTH, POISON_COUNT } from "./config"
+import { type GameConfig, defaultGameConfig } from "./config"
 
 const randomSnakeStyle = (): DrawingSnakeStyle => {
   const h = random(0, 360)
@@ -27,28 +27,34 @@ export class GameController {
   readonly game: SnakesGame
   readonly canvasContainer: CanvasContainer
   readonly bots: SimpleRandomBot[]
+  config: GameConfig
   constructor() {
-    this.game = new SnakesGame(GAME_WIDTH, GAME_HEIGHT)
+    this.config = defaultGameConfig
+    const {width, height} = this.config.field
+    this.game = new SnakesGame(width, height)
     this.canvasContainer = new CanvasContainer(this.game, fieldTheme)
     this.bots = []
   }
 
   _initializeField(): void {
-    for (let i = 0; i < FOOD_COUNT; ++i) {
-      this.game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.FOOD)
+    const {width, height} = this.config.field
+    const {foodCount = 0, bricksCount = 0, poisonCount = 0} = this.config.cellGeneration ?? {}
+    for (let i = 0; i < foodCount; ++i) {
+      this.game.putCell(random(0, width), random(0, height), CellEnum.FOOD)
     }
     
-    for (let i = 0; i < BRICKS_COUNT; ++i) {
-      this.game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.BRICK)
+    for (let i = 0; i < bricksCount; ++i) {
+      this.game.putCell(random(0, width), random(0, height), CellEnum.BRICK)
     }
     
-    for (let i = 0; i < POISON_COUNT; ++i) {
-      this.game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.POISON)
+    for (let i = 0; i < poisonCount; ++i) {
+      this.game.putCell(random(0, width), random(0, height), CellEnum.POISON)
     }
   }
 
   _initializePlayer(): void {
-    const player = this.game.createPlayerSnake(Math.floor(GAME_WIDTH / 2), Math.floor(GAME_HEIGHT / 2), Direction.UP)
+    const {width, height} = this.config.field
+    const player = this.game.createPlayerSnake(Math.floor(width / 2), Math.floor(height / 2), Direction.UP)
 
     const onKeyDown = (e: KeyboardEvent): void => {
       if (e.isComposing || e.keyCode === 229) {
@@ -83,9 +89,10 @@ export class GameController {
   }
 
   _initializeBots(): void {
+    const {width, height} = this.config.field
     for (let i = 0; i < 20; ++i) {
-      const x = random(0, GAME_WIDTH)
-      const y = random(0, GAME_HEIGHT)
+      const x = random(0, width)
+      const y = random(0, height)
       if (!cellIsSnake(this.game.getCell(x, y))) {
         const control = this.game.createSnake(x, y, Direction.UP, randomSnakeStyle())
         this.bots.push(new SimpleRandomBot(control))
