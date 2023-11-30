@@ -1,19 +1,22 @@
-import { type GameConfig } from "../../config";
-import { queryChild, queryTemplate } from "../utils";
+import { type GameConfig } from "../../config"
+import { queryChild, queryTemplate } from "../utils"
 
 import "./style.css"
 
-const NewGameForm = (rootElement: HTMLElement, initConfig: GameConfig, onSubmit: (config: GameConfig) => void): (() => void) => {
-    
+const NewGameForm = (
+  rootElement: HTMLElement,
+  initConfig: GameConfig,
+  onSubmit: (config: GameConfig) => void,
+): (() => void) => {
   const template = queryTemplate("NewGameForm")
   rootElement.appendChild(template.content.cloneNode(true))
 
-  const config = {...initConfig}
-  
-  const form = queryChild<HTMLFormElement>(rootElement, ".new-game-form")
+  const config = { ...initConfig }
 
-  const inputWidth = queryChild<HTMLInputElement>(rootElement, "[name=\"width\"]")
-  const inputHeight = queryChild<HTMLInputElement>(rootElement, "[name=\"height\"]")
+  const form = queryChild<HTMLFormElement>(rootElement, ".form")
+
+  const inputWidth = queryChild<HTMLInputElement>(rootElement, '[name="width"]')
+  const inputHeight = queryChild<HTMLInputElement>(rootElement, '[name="height"]')
 
   inputWidth.valueAsNumber = config.field.width
   inputHeight.valueAsNumber = config.field.height

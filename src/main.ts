@@ -1,6 +1,7 @@
 import "./style.css"
-import { GameController } from "./app/controller";
+import MainContainer from "./app/ui/MainContainer"
 
-const app = new GameController()
+const appElement = document.getElementById("app") as HTMLDivElement
 
-app.start()
+const dispose = MainContainer(appElement)
+

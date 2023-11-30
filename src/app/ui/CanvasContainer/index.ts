@@ -1,19 +1,25 @@
-import { type SnakesGame } from "../../../game/game"
-import { type FieldTheme } from "../../../graphics/theme"
-import { Viewport } from "../../../graphics/viewport"
-import { queryTemplate } from "../utils"
+import { queryChild, queryTemplate } from "../utils"
 
-const CanvasContainer = (rootElement: HTMLElement, game: SnakesGame, theme?: FieldTheme): (() => void) => {
+import "./style.css"
+
+export interface CanvasContainerProps {
+  gameWidth: number
+  gameHeight: number
+  onCanvasResized: () => void
+  onCanvasCreated: (canvas: HTMLCanvasElement) => void
+}
+
+const CanvasContainer = (
+  rootElement: HTMLElement,
+  { gameWidth, gameHeight, onCanvasCreated, onCanvasResized }: CanvasContainerProps,
+): (() => void) => {
   const template = queryTemplate("CanvasContainer")
   rootElement.appendChild(template.content.cloneNode(true))
+  
+  const canvas = queryChild<HTMLCanvasElement>(rootElement, "canvas")
+  const canvasContaier = queryChild<HTMLDivElement>(rootElement, ".CanvasContainer")
 
-  const { width: gameWidth, height: gameHeight } = game
-  const canvas = document.getElementById("canvas") as (HTMLCanvasElement | null)
-  if (canvas == null) {
-    throw new Error("Canvas element is not found")
-  }
-
-  const viewport = new Viewport(canvas, gameWidth, gameHeight, theme)
+  onCanvasCreated(canvas)
 
   const gameRatio = gameWidth / gameHeight
 
@@ -32,17 +38,10 @@ const CanvasContainer = (rootElement: HTMLElement, game: SnakesGame, theme?: Fie
         canvas.height = height
       }
     }
-    game.draw()
+    onCanvasResized()
   })
-
-  const canvasContaier = document.getElementById("canvas-container")
-  if (canvasContaier === null) {
-    throw new Error("Canvas container element is not found")
-  }
   observer.observe(canvasContaier)
 
-  game.output = viewport
-  
   return () => {
     observer.disconnect()
   }
