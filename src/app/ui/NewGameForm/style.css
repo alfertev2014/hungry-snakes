@@ -1,0 +1,16 @@
+.NewGameForm {
+  width: 100%;
+  .form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .form-group, .form-actions-group, .h-separator {
+    width: 100%;
+  }
+
+
+}
