@@ -5,7 +5,7 @@ export interface GameConfig {
   }
   cellGeneration?: {
     foodCount?: number
-    bricksCount?: number
+    brickCount?: number
     poisonCount?: number
   }
   botGeneration?: {
@@ -20,7 +20,7 @@ export const defaultGameConfig: GameConfig = {
   },
   cellGeneration: {
     foodCount: 2000,
-    bricksCount: 50,
+    brickCount: 50,
     poisonCount: 50,
   },
   botGeneration: {

@@ -31,12 +31,12 @@ export class GameController {
 
   _initializeField(): void {
     const { width, height } = this.config.field
-    const { foodCount = 0, bricksCount = 0, poisonCount = 0 } = this.config.cellGeneration ?? {}
+    const { foodCount = 0, brickCount = 0, poisonCount = 0 } = this.config.cellGeneration ?? {}
     for (let i = 0; i < foodCount; ++i) {
       this.game.putCell(random(0, width), random(0, height), CellEnum.FOOD)
     }
 
-    for (let i = 0; i < bricksCount; ++i) {
+    for (let i = 0; i < brickCount; ++i) {
       this.game.putCell(random(0, width), random(0, height), CellEnum.BRICK)
     }
 
@@ -83,7 +83,8 @@ export class GameController {
 
   _initializeBots(): void {
     const { width, height } = this.config.field
-    for (let i = 0; i < 20; ++i) {
+    const botCount = this.config.botGeneration?.count ?? 0
+    for (let i = 0; i < botCount; ++i) {
       const x = random(0, width)
       const y = random(0, height)
       if (!cellIsSnake(this.game.getCell(x, y))) {
