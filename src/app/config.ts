@@ -1,7 +1,29 @@
+export interface GameConfig {
+  field: {
+    width: number
+    height: number
+  }
+  cellGeneration?: {
+    foodCount?: number
+    brickCount?: number
+    poisonCount?: number
+  }
+  botGeneration?: {
+    count: number
+  }
+}
 
-export const GAME_WIDTH = 120
-export const GAME_HEIGHT = 90
-
-export const FOOD_COUNT = 2000
-export const BRICKS_COUNT = 50
-export const POISON_COUNT = 20
+export const defaultGameConfig: GameConfig = {
+  field: {
+    width: 120,
+    height: 90,
+  },
+  cellGeneration: {
+    foodCount: 2000,
+    brickCount: 50,
+    poisonCount: 50,
+  },
+  botGeneration: {
+    count: 20,
+  },
+}

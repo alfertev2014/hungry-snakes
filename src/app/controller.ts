@@ -2,10 +2,10 @@ import { SimpleRandomBot } from "../bot/simpleRandom"
 import { CellEnum, cellIsSnake } from "../game/cell"
 import { Direction } from "../game/direction"
 import { SnakesGame } from "../game/game"
-import { CanvasContainer } from "../ui/canvas"
-import { type FieldTheme, type DrawingSnakeStyle } from "../ui/theme"
+import { type DrawingSnakeStyle } from "../graphics/theme"
 import { cssHSLA, random } from "../util"
-import { BRICKS_COUNT, FOOD_COUNT, GAME_HEIGHT, GAME_WIDTH, POISON_COUNT } from "./config"
+import { type GameConfig } from "./config"
+import { type DrawingOutput } from "../game/output"
 
 const randomSnakeStyle = (): DrawingSnakeStyle => {
   const h = random(0, 360)
@@ -16,39 +16,38 @@ const randomSnakeStyle = (): DrawingSnakeStyle => {
   }
 }
 
-const fieldTheme: FieldTheme = {
-  background: "black",
-  food: cssHSLA(0, 0, 30),
-  brick: cssHSLA(0, 60, 40),
-  poison: cssHSLA(300, 100, 10)
-}
-
 export class GameController {
   readonly game: SnakesGame
-  readonly canvasContainer: CanvasContainer
   readonly bots: SimpleRandomBot[]
-  constructor() {
-    this.game = new SnakesGame(GAME_WIDTH, GAME_HEIGHT)
-    this.canvasContainer = new CanvasContainer(this.game, fieldTheme)
+  config: GameConfig
+  _intervalId: number | null = null
+  constructor(config: GameConfig) {
+    this.config = config
+    const { width, height } = this.config.field
+    this.game = new SnakesGame(width, height)
     this.bots = []
+    this._intervalId = null
   }
 
   _initializeField(): void {
-    for (let i = 0; i < FOOD_COUNT; ++i) {
-      this.game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.FOOD)
+    const { width, height } = this.config.field
+    const { foodCount = 0, brickCount = 0, poisonCount = 0 } = this.config.cellGeneration ?? {}
+    for (let i = 0; i < foodCount; ++i) {
+      this.game.putCell(random(0, width), random(0, height), CellEnum.FOOD)
     }
-    
-    for (let i = 0; i < BRICKS_COUNT; ++i) {
-      this.game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.BRICK)
+
+    for (let i = 0; i < brickCount; ++i) {
+      this.game.putCell(random(0, width), random(0, height), CellEnum.BRICK)
     }
-    
-    for (let i = 0; i < POISON_COUNT; ++i) {
-      this.game.putCell(random(0, GAME_WIDTH), random(0, GAME_HEIGHT), CellEnum.POISON)
+
+    for (let i = 0; i < poisonCount; ++i) {
+      this.game.putCell(random(0, width), random(0, height), CellEnum.POISON)
     }
   }
 
   _initializePlayer(): void {
-    const player = this.game.createPlayerSnake(Math.floor(GAME_WIDTH / 2), Math.floor(GAME_HEIGHT / 2), Direction.UP)
+    const { width, height } = this.config.field
+    const player = this.game.createPlayerSnake(Math.floor(width / 2), Math.floor(height / 2), Direction.UP)
 
     const onKeyDown = (e: KeyboardEvent): void => {
       if (e.isComposing || e.keyCode === 229) {
@@ -78,14 +77,16 @@ export class GameController {
       }
       this.game.draw()
     }
-    
+
     window.addEventListener("keydown", onKeyDown)
   }
 
   _initializeBots(): void {
-    for (let i = 0; i < 20; ++i) {
-      const x = random(0, GAME_WIDTH)
-      const y = random(0, GAME_HEIGHT)
+    const { width, height } = this.config.field
+    const botCount = this.config.botGeneration?.count ?? 0
+    for (let i = 0; i < botCount; ++i) {
+      const x = random(0, width)
+      const y = random(0, height)
       if (!cellIsSnake(this.game.getCell(x, y))) {
         const control = this.game.createSnake(x, y, Direction.UP, randomSnakeStyle())
         this.bots.push(new SimpleRandomBot(control))
@@ -94,7 +95,7 @@ export class GameController {
   }
 
   _startTimer(): void {
-    setInterval(() => {
+    this._intervalId = window.setInterval(() => {
       for (const bot of this.bots) {
         bot.doNextAction()
       }
@@ -103,10 +104,27 @@ export class GameController {
     }, 200)
   }
 
-  start(): void {
+  setGameOutput(output: DrawingOutput): void {
+    this.game.output = output
+  }
+
+  redraw(): void {
+    this.game.draw()
+  }
+
+  initialize(): void {
     this._initializeField()
     this._initializePlayer()
     this._initializeBots()
+  }
+
+  start(): void {
     this._startTimer()
+  }
+
+  stop(): void {
+    if (this._intervalId !== null) {
+      window.clearInterval(this._intervalId)
+    }
   }
 }
