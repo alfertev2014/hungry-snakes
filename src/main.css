@@ -1,0 +1,13 @@
+@import url(./style/reset.css);
+@import url(./style/theme.css);
+@import url(./style/default.css);
+
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}

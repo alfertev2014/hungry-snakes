@@ -1,0 +1,36 @@
+html,
+body {
+  font-size: calc(var(--size-unit) * 2);
+  font-family: sans-serif;
+  background-color: var(--theme-background-color);
+  color: var(--theme-text-color);
+}
+
+button,
+input,
+select,
+textarea {
+  appearance: none;
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  border: var(--theme-text-color) 1px solid;
+  color: var(--theme-text-color);
+  background-color: var(--theme-background-color);
+  border-radius: 0.4rem;
+  position: relative;
+  &:hover {
+    filter: brightness(80%);
+  }
+  &:active {
+    filter: brightness(60%);
+  }
+}
+
+button.main {
+  background-color: var(--theme-main-color);
+  color: black;
+  border: none;
+}
