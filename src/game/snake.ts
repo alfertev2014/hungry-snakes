@@ -130,7 +130,7 @@ export class Snake {
       case CellEnum.BOUNDARY:
       case CellEnum.BRICK:
         if (force) {
-          this._doTailStep(CellEnum.FOOD)
+          this.dropFood()
         }
         break
       case CellEnum.POISON:
@@ -146,8 +146,12 @@ export class Snake {
         if (snake === this && !force && toTail > 1) {
           // do nothing
         } else {
-          snake.cut(biteX, biteY)
-          this._doHeadStep()
+          if (this.length >= toTail) {
+            snake.cut(biteX, biteY)
+            this._doHeadStep()
+          } else if (force) {
+            this.dropFood()
+          }
         }
       }
     }

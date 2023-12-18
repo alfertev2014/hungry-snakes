@@ -579,11 +579,14 @@ describe("Snake doing step", () => {
       snake.doHeadStep()
       expect(snake.length).toBe(5)
 
-      const bittingSnake = new Snake(field, 2, 1, Direction.UP)
+      const bittingSnake = new Snake(field, 0, 1, Direction.RIGHT)
+      bittingSnake.doHeadStep()
+      bittingSnake.doHeadStep()
+      bittingSnake.changeDirection(Direction.UP)
 
       bittingSnake.doStep()
       expect(snake.length).toBe(2)
-      expect(bittingSnake.length).toBe(2)
+      expect(bittingSnake.length).toBe(4)
 
       expect(snake.headX).toBe(3)
       expect(snake.headY).toBe(1)
@@ -593,7 +596,7 @@ describe("Snake doing step", () => {
       expect(field.getCell(1, 0)).toBe(CellEnum.FOOD)
       expect(bittingSnake.headX).toBe(2)
       expect(bittingSnake.headY).toBe(0)
-      expect(bittingSnake.tailX).toBe(2)
+      expect(bittingSnake.tailX).toBe(0)
       expect(bittingSnake.tailY).toBe(1)
     })
     test("should do nothing if bitting snake is dead", () => {
@@ -662,7 +665,7 @@ describe("Snake doing step", () => {
       expect(field.getCell(0, 1)).toBe(CellEnum.FOOD)
     })
 
-    test("when bite to self body should cut itself and tail should become food", () => {
+    test("when forcely bite self body should cut itself and tail should become food", () => {
       const snake = new Snake(field, 0, 0, Direction.RIGHT)
       snake.changeDirection(Direction.RIGHT)
       snake.doHeadStep()
@@ -681,6 +684,49 @@ describe("Snake doing step", () => {
       expect(snake.tailY).toBe(0)
       expect(field.getCell(0, 0)).toBe(CellEnum.FOOD)
       expect(snake.length).toBe(4)
+    })
+
+    test("should not cut tail longer than self length", () => {
+      snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.doHeadStep()
+
+      const bittingSnake = new Snake(field, 0, 2, Direction.RIGHT)
+      bittingSnake.doHeadStep()
+      bittingSnake.doHeadStep()
+      bittingSnake.changeDirection(Direction.UP)
+      bittingSnake.doHeadStep()
+      bittingSnake.changeDirection(Direction.RIGHT)
+
+      bittingSnake.doStep()
+      expect(snake.length).toBe(6)
+      expect(bittingSnake.length).toBe(4)
+    })
+
+    test("force should behave like hitting brick if tail longer than self length", () => {
+      snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.doHeadStep()
+
+      const bittingSnake = new Snake(field, 0, 2, Direction.RIGHT)
+      bittingSnake.doHeadStep()
+      bittingSnake.doHeadStep()
+      bittingSnake.changeDirection(Direction.UP)
+      bittingSnake.doHeadStep()
+      bittingSnake.changeDirection(Direction.RIGHT)
+
+      bittingSnake.doForcedStep()
+      expect(snake.length).toBe(6)
+      expect(bittingSnake.length).toBe(3)
+      expect(field.getCell(0, 2)).toBe(CellEnum.FOOD)
     })
   })
 })
