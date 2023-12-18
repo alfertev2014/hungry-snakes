@@ -106,7 +106,15 @@ export class Snake {
     return true
   }
 
+  doForcedStep(): void {
+    this._doStep(true)
+  }
+
   doStep(): void {
+    this._doStep()
+  }
+
+  _doStep(force: boolean = false): void {
     if (this.isDead) {
       return
     }
@@ -121,15 +129,27 @@ export class Snake {
         break
       case CellEnum.BOUNDARY:
       case CellEnum.BRICK:
-        // do nothing
+        if (force) {
+          this._doTailStep(CellEnum.FOOD)
+        }
         break
       case CellEnum.POISON:
         this._doHeadStep()
         this.doTailStep()
         this.doTailStep()
         break
-      default:
-        this._bite(nextCell.snake)
+      default: {
+        const snake = nextCell.snake
+        const biteX = this._headX + directionOffsetByX(this._direction)
+        const biteY = this._headY + directionOffsetByY(this._direction)
+        const toTail = snake.countToTail(biteX, biteY)
+        if (snake === this && !force && toTail > 1) {
+          // do nothing
+        } else {
+          snake.cut(biteX, biteY)
+          this._doHeadStep()
+        }
+      }
     }
   }
 
@@ -187,12 +207,25 @@ export class Snake {
     }
   }
 
-  _bite(snake: Snake): void {
-    if (this.isDead) {
-      return
+  countToTail(x: number, y: number): number {
+    const cutCell = this.field.getCell(x, y)
+    if (cellIsSnake(cutCell) && cutCell.snake === this) {
+      let count = 1
+      let tailX = this.tailX
+      let tailY = this.tailY
+      while (tailX !== x || tailY !== y) {
+        const tailCell = this.field.getCell(tailX, tailY)
+        if (!cellIsSnake(tailCell)) {
+          throw Error("Tail counting is not valid! Cell is not snake.")
+        }
+        tailX += directionOffsetByX(tailCell.direction)
+        tailY += directionOffsetByY(tailCell.direction)
+
+        count++
+      }
+      return count
     }
-    snake.cut(this._headX + directionOffsetByX(this._direction), this._headY + directionOffsetByY(this._direction))
-    this._doHeadStep()
+    return 0
   }
 }
 

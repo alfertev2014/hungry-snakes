@@ -545,7 +545,7 @@ describe("Snake doing step", () => {
       expect(snake.tailX).toBe(1)
       expect(snake.tailY).toBe(0)
     })
-    test("when bite to body should cut itself and tail should become food", () => {
+    test("when try to bite to self body should do nothing", () => {
       const snake = new Snake(field, 0, 0, Direction.RIGHT)
       snake.changeDirection(Direction.RIGHT)
       snake.doHeadStep()
@@ -559,11 +559,10 @@ describe("Snake doing step", () => {
 
       snake.doStep()
       expect(snake.headX).toBe(1)
-      expect(snake.headY).toBe(0)
-      expect(snake.tailX).toBe(2)
+      expect(snake.headY).toBe(1)
+      expect(snake.tailX).toBe(0)
       expect(snake.tailY).toBe(0)
-      expect(field.getCell(0, 0)).toBe(CellEnum.FOOD)
-      expect(snake.length).toBe(4)
+      expect(snake.length).toBe(5)
     })
   })
   describe("when bite other snake", () => {
@@ -620,6 +619,68 @@ describe("Snake doing step", () => {
       expect(snake.tailY).toBe(0)
       expect(field.getCell(0, 0)).toBe(snake.RIGHT)
       expect(field.getCell(1, 0)).toBe(snake.RIGHT)
+    })
+  })
+
+  describe("forced step", () => {
+    beforeEach(() => {
+      field = new GameField(4, 3)
+    })
+    
+    test("should be like regular step for free steps", () => {
+      snake = new Snake(field, 0, 1, Direction.RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.RIGHT)
+      field.setCell(2, 2, CellEnum.FOOD)
+
+
+      expect(snake.length).toBe(3)
+
+      snake.doForcedStep()
+
+      expect(snake.length).toBe(4)
+    })
+
+    test("should reduce length by 1 when hit the brick or boundary", () => {
+      snake = new Snake(field, 0, 1, Direction.RIGHT)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+
+      expect(snake.length).toBe(3)
+
+      snake.doForcedStep()
+
+      expect(snake.length).toBe(2)
+      expect(snake.headX).toBe(1)
+      expect(snake.headY).toBe(2)
+      expect(snake.tailX).toBe(1)
+      expect(snake.tailY).toBe(1)
+
+      expect(field.getCell(0, 1)).toBe(CellEnum.FOOD)
+    })
+
+    test("when bite to self body should cut itself and tail should become food", () => {
+      const snake = new Snake(field, 0, 0, Direction.RIGHT)
+      snake.changeDirection(Direction.RIGHT)
+      snake.doHeadStep()
+      snake.doHeadStep()
+      snake.changeDirection(Direction.DOWN)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.LEFT)
+      snake.doHeadStep()
+      snake.changeDirection(Direction.UP)
+      expect(snake.length).toBe(5)
+
+      snake.doForcedStep()
+      expect(snake.headX).toBe(1)
+      expect(snake.headY).toBe(0)
+      expect(snake.tailX).toBe(2)
+      expect(snake.tailY).toBe(0)
+      expect(field.getCell(0, 0)).toBe(CellEnum.FOOD)
+      expect(snake.length).toBe(4)
     })
   })
 })
