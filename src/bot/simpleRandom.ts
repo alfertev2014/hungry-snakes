@@ -29,7 +29,9 @@ export class SimpleRandomBot {
       return
     }
 
-    let nextDirection: Direction = randomDirection()
+    const byInertion = random(0, 100) > 60
+
+    let nextDirection: Direction = byInertion ? this.snakeControl.direction : randomDirection()
     const { headX, headY, tailX, tailY } = this.snakeControl
 
     for (let i = 0; i < 3; ++i) {
@@ -42,6 +44,9 @@ export class SimpleRandomBot {
           break
         } else {
           nextDirection = oppositeDirectionOf(nextCell.direction)
+          if (i > 0) {
+            this.snakeControl.onArrowPressed(nextDirection)
+          }
         }
       } else if (nextCell === CellEnum.BOUNDARY || nextCell === CellEnum.BRICK) {
         nextDirection = randomDirection()

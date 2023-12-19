@@ -101,7 +101,7 @@ export class GameController {
       }
       this.game.tick()
       this.game.draw()
-    }, 200)
+    }, 400)
   }
 
   setGameOutput(output: DrawingOutput): void {
