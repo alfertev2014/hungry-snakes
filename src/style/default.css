@@ -1,7 +1,27 @@
-html,
-body {
+html{
   font-size: calc(var(--size-unit) * 2);
   font-family: sans-serif;
+}
+
+@media (width >= 38em) {
+  :root {
+    --size-unit: 12px;
+  }
+}
+
+@media (width >= 56em) {
+  :root {
+    --size-unit: 14px;
+  }
+}
+
+@media (width >= 80em) {
+  :root {
+    --size-unit: 16px;
+  }
+}
+
+body {
   background-color: var(--theme-background-color);
   color: var(--theme-text-color);
 }

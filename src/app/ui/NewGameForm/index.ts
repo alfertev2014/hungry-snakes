@@ -61,6 +61,8 @@ const NewGameForm = (
     if (this.checkValidity()) {
       onSubmit({ ...config })
     }
+    const formData = new FormData(form)
+
   }
   form.addEventListener("submit", handleSubmit)
 
