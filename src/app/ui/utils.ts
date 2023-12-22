@@ -6,10 +6,10 @@ export const queryTemplate = (id: string): HTMLTemplateElement => {
   return template
 }
 
-export const queryChild = <T extends HTMLElement>(parent: HTMLElement, selector: string): T => {
+export const queryChild = <T extends HTMLElement>(parent: ParentNode, selector: string): T => {
   const element = parent.querySelector(selector)
   if (element == null) {
-    throw new Error(`Cannot query selector by '${selector}' of parent ${parent.tagName}`)
+    throw new Error(`Cannot query selector by '${selector}' of parent`)
   }
   return element as T
 }

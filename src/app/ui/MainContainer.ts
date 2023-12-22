@@ -5,6 +5,7 @@ import { type GameConfig, defaultGameConfig } from "../config"
 import { GameController } from "../controller"
 import CanvasContainer from "./CanvasContainer"
 import NewGameForm from "./NewGameForm"
+import { FwParent } from "./fw"
 
 const fieldTheme: FieldTheme = {
   background: "black",
@@ -14,38 +15,42 @@ const fieldTheme: FieldTheme = {
 }
 
 const MainContainer = (rootElement: HTMLElement): (() => void) => {
-  let currentComponentDispose: () => void
   let gameController: GameController
   let currentConfig = defaultGameConfig
+  const root: FwParent = new FwParent()
 
   const onNewGame = (config: GameConfig): void => {
-    currentComponentDispose()
+    root.dispose()
     rootElement.replaceChildren()
 
     const { width: gameWidth, height: gameHeight } = config.field
 
-    currentComponentDispose = CanvasContainer(rootElement, {
-      gameWidth,
-      gameHeight,
-      onCanvasCreated(canvas) {
-        const viewport = new Viewport(canvas, gameWidth, gameHeight, fieldTheme)
-        gameController = new GameController(config)
-        gameController.setGameOutput(viewport)
-        gameController.initialize()
-        gameController.start()
+    root.createComponent(
+      CanvasContainer,
+      {
+        gameWidth,
+        gameHeight,
+        onCanvasCreated(canvas) {
+          const viewport = new Viewport(canvas, gameWidth, gameHeight, fieldTheme)
+          gameController = new GameController(config)
+          gameController.setGameOutput(viewport)
+          gameController.initialize()
+          gameController.start()
+        },
+        onCanvasResized() {
+          gameController.redraw()
+        },
       },
-      onCanvasResized() {
-        gameController.redraw()
-      },
-    })
+      rootElement,
+    )
     currentConfig = config
   }
 
-  currentComponentDispose = NewGameForm(rootElement, currentConfig, onNewGame)
+  root.createComponent(NewGameForm, { initConfig: currentConfig, onSubmit: onNewGame }, rootElement)
 
   return () => {
     gameController.stop()
-    currentComponentDispose()
+    root.dispose()
   }
 }
 

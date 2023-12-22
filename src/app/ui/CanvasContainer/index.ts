@@ -1,3 +1,4 @@
+import { type FwComponent } from "../fw"
 import { queryChild, queryTemplate } from "../utils"
 
 import "./style.css"
@@ -9,15 +10,17 @@ export interface CanvasContainerProps {
   onCanvasCreated: (canvas: HTMLCanvasElement) => void
 }
 
-const CanvasContainer = (
-  rootElement: HTMLElement,
-  { gameWidth, gameHeight, onCanvasCreated, onCanvasResized }: CanvasContainerProps,
-): (() => void) => {
+const CanvasContainer: FwComponent<CanvasContainerProps> = ({
+  gameWidth,
+  gameHeight,
+  onCanvasCreated,
+  onCanvasResized,
+}) => {
   const template = queryTemplate("CanvasContainer")
-  rootElement.appendChild(template.content.cloneNode(true))
+  const content = template.content.cloneNode(true) as DocumentFragment
 
-  const canvas = queryChild<HTMLCanvasElement>(rootElement, "canvas")
-  const canvasContaier = queryChild<HTMLDivElement>(rootElement, ".canvas-container")
+  const canvas = queryChild<HTMLCanvasElement>(content, "canvas")
+  const canvasContaier = queryChild<HTMLDivElement>(content, ".canvas-container")
 
   onCanvasCreated(canvas)
 
@@ -42,8 +45,11 @@ const CanvasContainer = (
   })
   observer.observe(canvasContaier)
 
-  return () => {
-    observer.disconnect()
+  return {
+    fragment: content,
+    dispose: () => {
+      observer.disconnect()
+    },
   }
 }
 

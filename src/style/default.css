@@ -1,4 +1,4 @@
-html{
+html {
   font-size: calc(var(--size-unit) * 2);
   font-family: sans-serif;
 }
@@ -41,7 +41,7 @@ button {
   background-color: var(--theme-background-color);
   border-radius: 0.4rem;
   position: relative;
-  
+
   &:hover {
     filter: brightness(80%);
   }
