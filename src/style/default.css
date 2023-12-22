@@ -21,9 +21,11 @@ button {
   background-color: var(--theme-background-color);
   border-radius: 0.4rem;
   position: relative;
+  
   &:hover {
     filter: brightness(80%);
   }
+
   &:active {
     filter: brightness(60%);
   }

@@ -629,7 +629,7 @@ describe("Snake doing step", () => {
     beforeEach(() => {
       field = new GameField(4, 3)
     })
-    
+
     test("should be like regular step for free steps", () => {
       snake = new Snake(field, 0, 1, Direction.RIGHT)
       snake.doHeadStep()
@@ -637,7 +637,6 @@ describe("Snake doing step", () => {
       snake.doHeadStep()
       snake.changeDirection(Direction.RIGHT)
       field.setCell(2, 2, CellEnum.FOOD)
-
 
       expect(snake.length).toBe(3)
 

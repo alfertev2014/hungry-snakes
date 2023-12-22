@@ -1,9 +1,10 @@
-.NewGameForm {
+.new-game-form {
   width: 100%;
   display: flex;
   justify-content: center;
   gap: var(--size-unit);
   padding: var(--size-unit);
+  
   .form {
     display: flex;
     flex-direction: column;
@@ -12,11 +13,11 @@
     width: 100%;
     max-width: 400px;
   }
+  
   .input-number {
     display: flex;
     flex-flow: row wrap;
-    row-gap: 0;
-    column-gap: var(--size-unit);
+    gap: 0 var(--size-unit);
     justify-content: space-between;
   }
 
@@ -41,14 +42,14 @@
   .form-actions-group {
     display: flex;
     flex-flow: row wrap;
-    column-gap: calc(var(--size-unit) * 2);
-    row-gap: calc(var(--size-unit) * 0.5);
+    gap: calc(var(--size-unit) * 0.5) calc(var(--size-unit) * 2);
     justify-content: stretch;
   }
 
   .action-button {
     padding: calc(var(--size-unit) * 0.5) calc(var(--size-unit) * 1.5);
     flex: 1 1 auto;
+
     &.main {
       background-color: var(--theme-main-color);
     }

@@ -13,14 +13,13 @@ const NewGameForm = (
 
   const config = { ...initConfig }
 
-  
   const inputWidth = queryChild<HTMLInputElement>(rootElement, '[name="width"]')
   inputWidth.valueAsNumber = config.field.width
   function handleWidthChange(this: HTMLInputElement, ev: Event): void {
     config.field.width = this.valueAsNumber
   }
   inputWidth.addEventListener("change", handleWidthChange)
-  
+
   const inputHeight = queryChild<HTMLInputElement>(rootElement, '[name="height"]')
   inputHeight.valueAsNumber = config.field.height
   function handleHeightChange(this: HTMLInputElement, ev: Event): void {
@@ -55,7 +54,7 @@ const NewGameForm = (
     config.botGeneration = { ...config.botGeneration, count: this.valueAsNumber }
   }
   inputBot.addEventListener("change", handleBotChange)
-  
+
   const form = queryChild<HTMLFormElement>(rootElement, ".form")
   function handleSubmit(this: HTMLFormElement, ev: SubmitEvent): void {
     ev.preventDefault()

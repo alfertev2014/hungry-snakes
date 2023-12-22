@@ -15,9 +15,9 @@ const CanvasContainer = (
 ): (() => void) => {
   const template = queryTemplate("CanvasContainer")
   rootElement.appendChild(template.content.cloneNode(true))
-  
+
   const canvas = queryChild<HTMLCanvasElement>(rootElement, "canvas")
-  const canvasContaier = queryChild<HTMLDivElement>(rootElement, ".CanvasContainer")
+  const canvasContaier = queryChild<HTMLDivElement>(rootElement, ".canvas-container")
 
   onCanvasCreated(canvas)
 
