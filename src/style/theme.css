@@ -2,5 +2,6 @@
   --size-unit: 8px;
   --theme-background-color: #000;
   --theme-text-color: #ccc;
-  --theme-main-color: #0c0;
+  --theme-primary-color: rgb(25 227 25);
+  --theme-error-color: rgb(255 78 78);
 }

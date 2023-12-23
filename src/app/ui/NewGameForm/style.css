@@ -50,8 +50,8 @@
     padding: calc(var(--size-unit) * 0.5) calc(var(--size-unit) * 1.5);
     flex: 1 1 auto;
 
-    &.main {
-      background-color: var(--theme-main-color);
+    &.primary {
+      background-color: var(--theme-primary-color);
     }
   }
 }

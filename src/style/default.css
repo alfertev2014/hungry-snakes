@@ -35,6 +35,10 @@ textarea {
   margin: 0;
 }
 
+input:invalid {
+  box-shadow: 0 0 5px 2px var(--theme-error-color);
+}
+
 button {
   border: var(--theme-text-color) 1px solid;
   color: var(--theme-text-color);
@@ -51,8 +55,8 @@ button {
   }
 }
 
-button.main {
-  background-color: var(--theme-main-color);
+button.primary {
+  background-color: var(--theme-primary-color);
   color: black;
   border: none;
 }
