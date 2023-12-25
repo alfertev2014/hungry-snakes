@@ -1,14 +1,17 @@
 export type FwDisposeHandler = () => void
 
-export interface FwController {
-  readonly fragment: DocumentFragment | Node
+export interface FwDisposable {
   readonly dispose: FwDisposeHandler
+}
+
+export interface FwController extends FwDisposable {
+  readonly fragment: DocumentFragment | Node
 }
 
 export type FwComponent<PropsType> = (props: PropsType) => FwController
 
 export class FwParent {
-  readonly _controllers: FwController[]
+  readonly _controllers: FwDisposable[]
   constructor() {
     this._controllers = []
   }
@@ -18,6 +21,16 @@ export class FwParent {
     this._controllers.push(controller)
 
     rootElement.replaceChildren(controller.fragment)
+  }
+
+  createEventHandler<K extends keyof HTMLElementEventMap, E extends HTMLElement>(element: E, type: K, handler: (this: E, event: HTMLElementEventMap[K]) => any): void
+  createEventHandler(element: HTMLElement, type: string, handler: EventListenerOrEventListenerObject): void {
+    element.addEventListener(type, handler)
+    this._controllers.push({
+      dispose() {
+        element.removeEventListener(type, handler)
+      }
+    })
   }
 
   dispose(): void {
