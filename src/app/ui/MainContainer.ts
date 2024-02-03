@@ -1,11 +1,14 @@
+import type { PlaceholderComponent } from "rwrtw"
 import { type FieldTheme } from "../../graphics/theme"
 import { Viewport } from "../../graphics/viewport"
 import { cssHSLA } from "../../util"
-import { type GameConfig, defaultGameConfig } from "../config"
+import { defaultGameConfig } from "../config"
 import { GameController } from "../controller"
 import CanvasContainer from "./CanvasContainer"
 import NewGameForm from "./NewGameForm"
-import { FwParent } from "./fw"
+import { source } from "rwrtw/lib/reactive/observable"
+import { reContent } from "rwrtw/lib/template/reactive"
+import { fr, lc } from "rwrtw/lib/template"
 
 const fieldTheme: FieldTheme = {
   background: "black",
@@ -14,44 +17,49 @@ const fieldTheme: FieldTheme = {
   poison: cssHSLA(300, 100, 10),
 }
 
-const MainContainer = (rootElement: HTMLElement): (() => void) => {
-  let gameController: GameController
-  let currentConfig = defaultGameConfig
-  const root: FwParent = new FwParent()
+const MainContainer = (): PlaceholderComponent => {
+  let gameController: GameController | undefined
+  const config = source(defaultGameConfig)
 
-  const onNewGame = (config: GameConfig): void => {
-    root.dispose()
-    rootElement.replaceChildren()
+  const screen = source("NewGame")
 
-    const { width: gameWidth, height: gameHeight } = config.field
-
-    root.createComponent(
-      CanvasContainer,
-      {
-        gameWidth,
-        gameHeight,
-        onCanvasCreated(canvas) {
-          const viewport = new Viewport(canvas, gameWidth, gameHeight, fieldTheme)
-          gameController = new GameController(config)
-          gameController.setGameOutput(viewport)
-          gameController.initialize()
-          gameController.start()
-        },
-        onCanvasResized() {
-          gameController.redraw()
-        },
-      },
-      rootElement,
-    )
-    currentConfig = config
-  }
-
-  root.createComponent(NewGameForm, { initConfig: currentConfig, onSubmit: onNewGame }, rootElement)
-
-  return () => {
-    gameController.stop()
-    root.dispose()
-  }
+  return fr(
+    lc({
+      dispose() {
+        gameController?.stop()
+      }
+    }),
+    reContent(screen, () => {
+      switch (screen.current()) {
+        case "NewGame":
+          return NewGameForm({ initConfig: config.current(), onSubmit: (value) => {
+            config.change(value)
+            screen.change("Canvas")
+          } })
+        case "Canvas": {
+          const { field: { width, height } } = config.current()
+          return CanvasContainer({
+            gameWidth: width,
+            gameHeight: height,
+            onCanvasCreated(canvas) {
+              if (gameController == null) {
+                const viewport = new Viewport(canvas, width, height, fieldTheme)
+                gameController = new GameController(config.current())
+                gameController.setGameOutput(viewport)
+                gameController.initialize()
+                gameController.start()
+              }
+            },
+            onCanvasResized() {
+              gameController?.redraw()
+            },
+          })
+        }
+        default:
+          return null
+      }
+    })
+  )
 }
 
 export default MainContainer

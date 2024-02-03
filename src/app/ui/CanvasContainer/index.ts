@@ -1,7 +1,7 @@
-import { type FwComponent } from "../fw"
-import { queryChild, queryTemplate } from "../utils"
+import type { PlaceholderComponent } from "rwrtw"
 
 import "./style.css"
+import { createRef, el, fr, lc, ref } from "rwrtw/lib/template"
 
 export interface CanvasContainerProps {
   gameWidth: number
@@ -10,47 +10,60 @@ export interface CanvasContainerProps {
   onCanvasCreated: (canvas: HTMLCanvasElement) => void
 }
 
-const CanvasContainer: FwComponent<CanvasContainerProps> = ({
+const CanvasContainer = ({
   gameWidth,
   gameHeight,
   onCanvasCreated,
   onCanvasResized,
-}) => {
-  const template = queryTemplate("CanvasContainer")
-  const content = template.content.cloneNode(true) as DocumentFragment
-
-  const canvas = queryChild<HTMLCanvasElement>(content, "canvas")
-  const canvasContaier = queryChild<HTMLDivElement>(content, ".canvas-container")
-
-  onCanvasCreated(canvas)
+}: CanvasContainerProps): PlaceholderComponent => {
+  
+  const canvas = createRef<HTMLElement>()
+  const canvasContainer = createRef<HTMLElement>()
 
   const gameRatio = gameWidth / gameHeight
 
   const observer = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      const { width, height } = entry.contentRect
-      if (width === 0 || height === 0) {
-        return
-      }
+    if (canvas.current != null) {
+      const c = canvas.current as HTMLCanvasElement
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        if (width === 0 || height === 0) {
+          return
+        }
 
-      if (width / height < gameRatio) {
-        canvas.width = width
-        canvas.height = width / gameRatio
-      } else {
-        canvas.width = height * gameRatio
-        canvas.height = height
+        if (width / height < gameRatio) {
+          c.width = width
+          c.height = width / gameRatio
+        } else {
+          c.width = height * gameRatio
+          c.height = height
+        }
       }
+      onCanvasResized()
     }
-    onCanvasResized()
   })
-  observer.observe(canvasContaier)
-
-  return {
-    fragment: content,
-    dispose: () => {
-      observer.disconnect()
-    },
-  }
+  
+  return fr(
+    lc({
+      mount() {
+        if (canvasContainer.current != null) {
+          onCanvasCreated(canvas.current as HTMLCanvasElement)
+          observer.observe(canvasContainer.current)
+        }
+      },
+      unmount() {
+        if (canvasContainer.current != null) {
+          observer.unobserve(canvasContainer.current)
+        }
+      },
+      dispose: () => {
+        observer.disconnect()
+      }
+    }),
+    el("div", { class: "canvas-container"}, ref(canvasContainer))(
+      el("canvas", null, ref(canvas))("Canvas support is required")
+    )
+  )
 }
 
 export default CanvasContainer
