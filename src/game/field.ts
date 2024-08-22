@@ -10,7 +10,7 @@ export class GameField {
     }
     this.width = width
     this.height = height
-    this._cells = new Array(width * height)
+    this._cells = new Array<CellType>(width * height)
     for (let i = 0; i < this._cells.length; ++i) {
       this._cells[i] = CellEnum.EMPTY
     }

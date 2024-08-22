@@ -1,6 +1,6 @@
 import { CellEnum } from "../game/cell"
 import { Direction } from "../game/direction"
-import { type SnakeStyle, type DrawingOutput } from "../game/output"
+import { type DrawingOutput } from "../game/output"
 import { type DrawingSnakeStyle, type FieldTheme, type FillStyle } from "./theme"
 
 export const defaultTheme: FieldTheme = {
@@ -78,7 +78,7 @@ export class Viewport implements DrawingOutput {
   }
 
   drawSnakeCell(
-    style: SnakeStyle | null,
+    style: object | null,
     x: number,
     y: number,
     cellNumber: number,
