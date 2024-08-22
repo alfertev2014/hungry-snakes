@@ -25,6 +25,6 @@
     "vite": "^5.4.2"
   },
   "dependencies": {
-    "rwrtw": "^0.0.8"
+    "rwrtw": "^0.0.9"
   }
 }
