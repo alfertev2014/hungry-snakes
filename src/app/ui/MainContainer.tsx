@@ -1,14 +1,11 @@
-import type { PlaceholderComponent } from "rwrtw"
+import { lc, reContent, source, type TemplateContent } from "rwrtw"
 import { type FieldTheme } from "../../graphics/theme"
 import { Viewport } from "../../graphics/viewport"
 import { cssHSLA } from "../../util"
-import { defaultGameConfig } from "../config"
+import { defaultGameConfig, GameConfig } from "../config"
 import { GameController } from "../controller"
 import CanvasContainer from "./CanvasContainer"
 import NewGameForm from "./NewGameForm"
-import { source } from "rwrtw/lib/reactive/observable"
-import { reContent } from "rwrtw/lib/template/reactive"
-import { fr, lc } from "rwrtw/lib/template"
 
 const fieldTheme: FieldTheme = {
   background: "black",
@@ -17,31 +14,33 @@ const fieldTheme: FieldTheme = {
   poison: cssHSLA(300, 100, 10),
 }
 
-const MainContainer = (): PlaceholderComponent => {
+
+const MainContainer = (): TemplateContent => {
   let gameController: GameController | undefined
-  const config = source(defaultGameConfig)
+  const config = source<GameConfig>(defaultGameConfig)
 
-  const screen = source("NewGame")
+  const screen = source<string>("NewGame")
 
-  return fr(
-    lc({
+  return <>
+    {lc({
       dispose() {
         gameController?.stop()
       }
-    }),
-    reContent(screen, () => {
-      switch (screen.current()) {
+    })}
+    {reContent(screen, (value) => {
+      switch (value) {
         case "NewGame":
-          return NewGameForm({ initConfig: config.current(), onSubmit: (value) => {
+          return <NewGameForm initConfig={config.current()} onSubmit={(value) => {
             config.change(value)
             screen.change("Canvas")
-          } })
+          }}
+          />
         case "Canvas": {
           const { field: { width, height } } = config.current()
-          return CanvasContainer({
-            gameWidth: width,
-            gameHeight: height,
-            onCanvasCreated(canvas) {
+          return <CanvasContainer
+            gameWidth={width}
+            gameHeight={height}
+            onCanvasCreated={(canvas) => {
               if (gameController == null) {
                 const viewport = new Viewport(canvas, width, height, fieldTheme)
                 gameController = new GameController(config.current())
@@ -49,17 +48,17 @@ const MainContainer = (): PlaceholderComponent => {
                 gameController.initialize()
                 gameController.start()
               }
-            },
-            onCanvasResized() {
+            }}
+            onCanvasResized={() => {
               gameController?.redraw()
-            },
-          })
+            }}
+          />
         }
         default:
           return null
       }
-    })
-  )
+    })}
+  </>
 }
 
 export default MainContainer

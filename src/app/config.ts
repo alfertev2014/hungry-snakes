@@ -1,15 +1,15 @@
-export interface GameConfig {
-  field: {
-    width: number
-    height: number
+export type GameConfig = {
+  readonly field: {
+    readonly width: number
+    readonly height: number
   }
-  cellGeneration?: {
-    foodCount?: number
-    brickCount?: number
-    poisonCount?: number
+  readonly cellGeneration: {
+    readonly foodCount?: number
+    readonly brickCount?: number
+    readonly poisonCount?: number
   }
-  botGeneration?: {
-    count: number
+  readonly botGeneration: {
+    readonly count: number
   }
 }
 

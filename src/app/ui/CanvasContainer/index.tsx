@@ -1,7 +1,7 @@
-import type { PlaceholderComponent } from "rwrtw"
+import type { TemplateContent } from "rwrtw"
 
 import "./style.css"
-import { createRef, el, fr, lc, ref } from "rwrtw/lib/template"
+import { createRef, lc, ref } from "rwrtw"
 
 export interface CanvasContainerProps {
   gameWidth: number
@@ -15,7 +15,7 @@ const CanvasContainer = ({
   gameHeight,
   onCanvasCreated,
   onCanvasResized,
-}: CanvasContainerProps): PlaceholderComponent => {
+}: CanvasContainerProps): TemplateContent => {
   
   const canvas = createRef<HTMLElement>()
   const canvasContainer = createRef<HTMLElement>()
@@ -43,8 +43,8 @@ const CanvasContainer = ({
     }
   })
   
-  return fr(
-    lc({
+  return <>
+    {lc({
       mount() {
         if (canvasContainer.current != null) {
           onCanvasCreated(canvas.current as HTMLCanvasElement)
@@ -59,11 +59,11 @@ const CanvasContainer = ({
       dispose: () => {
         observer.disconnect()
       }
-    }),
-    el("div", { class: "canvas-container"}, ref(canvasContainer))(
-      el("canvas", null, ref(canvas))("Canvas support is required")
-    )
-  )
+    })}
+    <div class="canvas-container" with={[ref(canvasContainer)]}>
+      <canvas with={[ref(canvas)]}>Canvas support is required</canvas>
+    </div>
+  </>
 }
 
 export default CanvasContainer
