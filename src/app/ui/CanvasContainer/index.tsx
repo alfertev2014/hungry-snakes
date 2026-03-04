@@ -1,7 +1,7 @@
 import type { TemplateContent } from "rwrtw"
 
 import "./style.css"
-import { createRef, lc, ref } from "rwrtw"
+import { createRef, lc } from "rwrtw"
 
 export interface CanvasContainerProps {
   gameWidth: number
@@ -60,8 +60,8 @@ const CanvasContainer = ({
         observer.disconnect()
       }
     })}
-    <div class="canvas-container" with={[ref(canvasContainer)]}>
-      <canvas with={[ref(canvas)]}>Canvas support is required</canvas>
+    <div class="canvas-container" ref={canvasContainer}>
+      <canvas ref={canvas}>Canvas support is required</canvas>
     </div>
   </>
 }

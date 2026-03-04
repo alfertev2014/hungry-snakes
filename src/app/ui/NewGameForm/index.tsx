@@ -1,4 +1,4 @@
-import { TemplateContent } from "rwrtw"
+import { computed, source, TemplateContent } from "rwrtw"
 import { type GameConfig } from "../../config"
 
 import "./style.css"
@@ -9,14 +9,14 @@ export interface NewGameFormProps {
 }
 
 const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateContent => {
-  const config = { ...initConfig }
+  const config = source<GameConfig>(initConfig)
 
   return (
     <div class="new-game-form">
       <form class="form" on:submit={function handleSubmit(this: HTMLFormElement, ev: Event): void {
         ev.preventDefault()
         if (this.checkValidity()) {
-          onSubmit({ ...config })
+          onSubmit({ ...config.current() })
         }
       }}>
         <fieldset class="form-group">
@@ -27,9 +27,15 @@ const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateConten
               type="number"
               name="width"
               id="new-game-form-width"
-              p:valueAsNumber={config.field.width ?? 120}
+              p:valueAsNumber={computed(() => config.current().field.width ?? 120)}
               on:change={function (this: HTMLInputElement): void {
-                config.field.width = this.valueAsNumber
+                config.update(c => ({
+                  ...c,
+                  field: {
+                    ...c.field,
+                    width: this.valueAsNumber
+                  }
+                }))
               }}
               min="3"
               max="2048"
@@ -42,9 +48,15 @@ const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateConten
               type="number"
               name="height"
               id="new-game-form-height"
-              p:valueAsNumber={config.field.height ?? 90}
+              p:valueAsNumber={computed(() => config.current().field.height ?? 90)}
               on:change={function (this: HTMLInputElement): void {
-                config.field.height = this.valueAsNumber
+                config.update(c => ({
+                  ...c,
+                  field: {
+                    ...c.field,
+                    height: this.valueAsNumber
+                  }
+                }))
               }}
               min="3"
               max="2048"
@@ -61,9 +73,15 @@ const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateConten
               type="number"
               name="foodCount"
               id="new-game-form-foodCount"
-              p:valueAsNumber={config.cellGeneration.foodCount ?? 2000}
+              p:valueAsNumber={computed(() => config.current().cellGeneration.foodCount ?? 2000)}
               on:change={function (this: HTMLInputElement): void {
-                config.cellGeneration.foodCount = this.valueAsNumber
+                config.update(c => ({
+                  ...c,
+                  cellGeneration: {
+                    ...c.cellGeneration,
+                    foodCount: this.valueAsNumber
+                  }
+                }))
               }}
               min="0"
               required
@@ -76,9 +94,15 @@ const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateConten
               type="number"
               name="brickCount"
               id="new-game-form-brickCount"
-              p:valueAsNumber={config.cellGeneration.brickCount ?? 50}
+              p:valueAsNumber={computed(() => config.current().cellGeneration.brickCount ?? 50)}
               on:change={function (this: HTMLInputElement): void {
-                config.cellGeneration.brickCount = this.valueAsNumber
+                config.update(c => ({
+                  ...c,
+                  cellGeneration: {
+                    ...c.cellGeneration,
+                    brickCount: this.valueAsNumber
+                  }
+                }))
               }}
               min="0"
               required
@@ -91,9 +115,15 @@ const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateConten
               type="number"
               name="poisonCount"
               id="new-game-form-poisonCount"
-              p:valueAsNumber={config.cellGeneration.poisonCount ?? 50}
+              p:valueAsNumber={computed(() => config.current().cellGeneration.poisonCount ?? 50)}
               on:change={function (this: HTMLInputElement): void {
-                config.cellGeneration.poisonCount = this.valueAsNumber
+                config.update(c => ({
+                  ...c,
+                  cellGeneration: {
+                    ...c.cellGeneration,
+                    poisonCount: this.valueAsNumber
+                  }
+                }))
               }}
               min="0"
               required
@@ -110,9 +140,15 @@ const NewGameForm = ({ initConfig, onSubmit }: NewGameFormProps): TemplateConten
               type="number"
               name="botCount"
               id="new-game-form-botCount"
-              p:valueAsNumber={config.botGeneration.count ?? 20}
+              p:valueAsNumber={computed(() => config.current().botGeneration.count ?? 20)}
               on:change={function (this: HTMLInputElement): void {
-                config.botGeneration.count = this.valueAsNumber
+                config.update(c => ({
+                  ...c,
+                  botGeneration: {
+                    ...c.botGeneration,
+                    count: this.valueAsNumber
+                  }
+                }))
               }}
               min="0"
               required
